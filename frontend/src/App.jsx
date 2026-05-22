@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import {
   MessageSquare, Sparkles, Sliders, LayoutGrid,
   Users, Smartphone, Sun, Moon, Send, MoreHorizontal,
-  ChevronDown, Info, ExternalLink, Settings, History, Cpu, ChevronRight, ArrowLeft
+  ChevronDown, Info, ExternalLink, Settings, History, Cpu, ChevronRight, ArrowLeft,
+  SlidersHorizontal, Layers, Palette, DollarSign, Home, Compass, Eye
 } from 'lucide-react';
 
 export default function App() {
@@ -11,9 +12,35 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
   // Track current structural viewport layout view mode without destroying layout code
-  const [currentView, setCurrentView] = useState('workspace'); // 'workspace' or 'history'
+  // Modes: 'workspace' | 'history' | 'preferences'
+  const [currentView, setCurrentView] = useState('preferences'); 
   // Track selected template for full-view details inside history page
   const [selectedTemplate, setSelectedTemplate] = useState(1);
+
+  // User Preferences / Design Specification States
+  const [layoutAdjustment, setLayoutAdjustment] = useState('flow');
+  const [designStyle, setDesignStyle] = useState('japandi');
+  
+  // Three-dimensional spatial limits
+  const [roomBreadth, setRoomBreadth] = useState('14');
+  const [roomWidth, setRoomWidth] = useState('18');
+  const [roomHeight, setRoomHeight] = useState('9');
+  
+  const [peopleCount, setPeopleCount] = useState(2);
+  const [roomCount, setRoomCount] = useState(1);
+  const [budgetMax, setBudgetMax] = useState(2500);
+  const [selectedPalette, setSelectedPalette] = useState('warm');
+  const [windowFacing, setWindowFacing] = useState('south');
+  const [flooringType, setFlooringType] = useState('hardwood');
+  const [workstations, setWorkstations] = useState(1);
+
+  // Pre-configured color array profiles for selection canvas
+  const colorPalettes = [
+    { id: 'warm', name: 'Warm Terracotta', shades: ['#f4ebe1', '#e6ccb2', '#b07d62', '#7f5539'] },
+    { id: 'industrial', name: 'Cool Steel', shades: ['#e5e5e5', '#a5a5a5', '#3d3d3d', '#1a1a1a'] },
+    { id: 'biophilic', name: 'Sage & Pine', shades: ['#f0f3f1', '#c2d5a7', '#84a59d', '#6f7f63'] },
+    { id: 'monochrome', name: 'Minimal Onyx', shades: ['#fafafa', '#e0e0e0', '#757575', '#212121'] }
+  ];
 
   // Reference Mock Data mapped exactly to your design layout assets
   const assets = [
@@ -61,7 +88,6 @@ export default function App() {
       id: 3,
       title: 'Nordic Mini Living Space',
       date: 'Created: May 12, 2026',
-      // Fresh, working alternative Scandinavian interior asset URL
       img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=600&q=80',
       chatSummary: [
         'User: Maximize natural lighting configuration using plants and white wood textures.',
@@ -77,18 +103,16 @@ export default function App() {
   const currentTemplateData = historyTemplates.find(t => t.id === selectedTemplate) || historyTemplates[0];
 
   return (
-    /* Root viewport fills the laptop display screen perfectly */
     <div className={`h-screen w-screen flex flex-col font-sans overflow-hidden transition-colors duration-500 p-3 ${
       darkMode ? 'bg-[#0f0b19]' : 'bg-[#f7b0be]'
     }`}>
 
-      {/* Complete Dashboard Window Wrapper */}
       <div className={`flex-1 w-full flex flex-col overflow-hidden rounded-2xl border ${
         darkMode ? 'bg-[#1b1528] border-[#312543] text-[#e2daeb]' : 'bg-[#ffeef2] border-[#fbcad4] text-[#4d2d34]'
       }`}>
 
         {/* =========================================================================
-            HEADER NAVIGATION BAR (Remains completely visible across both view modes)
+            HEADER NAVIGATION BAR
            ========================================================================= */}
         <header className={`px-8 py-4 flex items-center justify-between border-b transition-colors duration-500 shrink-0 ${
           darkMode ? 'bg-[#1e172c]/90 border-[#312543]' : 'bg-[#fff5f7]/95 border-[#fbcad4]'
@@ -113,7 +137,7 @@ export default function App() {
               + Create Design
             </button>
 
-            {/* FLOATING SETTINGS MENU DROPDOWN ICON TRIGGER */}
+            {/* FLOATING SETTINGS MENU DROPDOWN */}
             <div className="relative">
               <button 
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
@@ -124,7 +148,7 @@ export default function App() {
                 <Settings size={18} className={isSettingsOpen ? 'rotate-45 transition-transform' : 'transition-transform'} />
               </button>
 
-              {/* Absolute Dropdown - Floating wrapper that doesn't push the layout */}
+              {/* Absolute Dropdown Wrapper */}
               {isSettingsOpen && (
                 <div className={`absolute right-0 mt-3 w-60 rounded-2xl border shadow-xl z-50 p-1.5 transition-all animate-in fade-in zoom-in-95 duration-150 ${
                   darkMode ? 'bg-[#1e172c] border-[#3d2e53]' : 'bg-white border-[#f7b0be]'
@@ -136,7 +160,10 @@ export default function App() {
                     <span className="flex items-center gap-2.5"><History size={16} className="text-[#e96b8d]" /> History</span>
                     <ChevronRight size={12} className="opacity-40" />
                   </button>
-                  <button onClick={() => setIsSettingsOpen(false)} className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs text-left transition-colors ${darkMode ? 'hover:bg-[#251c36] text-[#dfd5eb]' : 'hover:bg-[#ffeef2] text-[#5c353d]'}`}>
+                  <button 
+                    onClick={() => { setCurrentView('preferences'); setIsSettingsOpen(false); }} 
+                    className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs text-left transition-colors ${darkMode ? 'hover:bg-[#251c36] text-[#dfd5eb]' : 'hover:bg-[#ffeef2] text-[#5c353d]'}`}
+                  >
                     <span className="flex items-center gap-2.5"><Sliders size={16} className="text-[#e96b8d]" /> Preference</span>
                     <ChevronRight size={12} className="opacity-40" />
                   </button>
@@ -152,18 +179,8 @@ export default function App() {
             <div className={`flex items-center rounded-full p-1 border gap-1 transition-colors ${
               darkMode ? 'bg-[#251d34] border-[#3d2e53]' : 'bg-[#fde2e8] border-[#f7b0be]'
             }`}>
-              <button
-                onClick={() => setDarkMode(false)}
-                className={`p-2 rounded-full transition-all ${!darkMode ? 'bg-white text-[#e96b8d] shadow-sm' : 'text-[#7e6b91]'}`}
-              >
-                <Sun size={16} />
-              </button>
-              <button
-                onClick={() => setDarkMode(true)}
-                className={`p-2 rounded-full transition-all ${darkMode ? 'bg-[#4b336d] text-[#ffcf76] shadow-sm' : 'text-[#a68d94]'}`}
-              >
-                <Moon size={16} />
-              </button>
+              <button onClick={() => setDarkMode(false)} className={`p-2 rounded-full transition-all ${!darkMode ? 'bg-white text-[#e96b8d] shadow-sm' : 'text-[#7e6b91]'}`}><Sun size={16} /></button>
+              <button onClick={() => setDarkMode(true)} className={`p-2 rounded-full transition-all ${darkMode ? 'bg-[#4b336d] text-[#ffcf76] shadow-sm' : 'text-[#a68d94]'}`}><Moon size={16} /></button>
             </div>
           </div>
         </header>
@@ -172,192 +189,142 @@ export default function App() {
             CONDITIONAL ROUTING MODULE VIA STATE CONTROLS
            ========================================================================= */}
         
-        {currentView === 'workspace' ? (
-          /* -----------------------------------------------------------------------
-              DEFAULT CONFIGURATION VIEW 1: THE INTERACTIVE CANVAS SIDEBAR MATRIX
-             ----------------------------------------------------------------------- */
+        {currentView === 'workspace' && (
+          /* VIEW 1: DEFAULT CONFIGURATION WORKSPACE INTERACTIVE CANVAS */
           <div className="flex-1 flex overflow-hidden p-6 gap-6">
-
-            {/* LEFT SIDEBAR PANEL: AI ASSISTANT (Locked at 28% width) */}
             <aside className="w-[28%] flex flex-col gap-5 h-full shrink-0 min-w-[340px]">
-
-              {/* Contextual AI Assistant Flow Thread */}
-              <div className={`flex-1 rounded-[24px] p-5 flex flex-col border transition-all duration-500 ${
-                darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
-              }`}>
+              <div className={`flex-1 rounded-[24px] p-5 flex flex-col border transition-all duration-500 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
                 <div className="flex items-center justify-between pb-3.5 border-b border-dashed border-current opacity-50 text-sm font-bold tracking-wider mb-4">
                   <span className="flex items-center gap-2.5 text-base"><MessageSquare size={18} className="text-[#e96b8d]" /> AI Assistant</span>
-                  <MoreHorizontal size={18} className="cursor-pointer" />
+                  <MoreHorizontal size={18} />
                 </div>
-
-                {/* Dynamic Conversational Message Logs */}
                 <div className="flex-1 overflow-y-auto space-y-4 pr-1 text-[13px] font-medium leading-relaxed">
                   <div className="flex gap-3 items-start">
                     <div className="w-7 h-7 rounded-full bg-orange-400 shrink-0 text-center text-xs leading-7 text-white font-bold">👤</div>
-                    <div className={`p-3.5 rounded-2xl rounded-tl-none font-semibold max-w-[85%] shadow-sm ${darkMode ? 'bg-[#251c36] text-[#dfd5eb]' : 'bg-[#ffeef2] text-[#5c353d]'}`}>
-                      Hi, as you optimize a small office/room to modern a small /living room.
-                    </div>
+                    <div className={`p-3.5 rounded-2xl rounded-tl-none font-semibold max-w-[85%] shadow-sm ${darkMode ? 'bg-[#251c36] text-[#dfd5eb]' : 'bg-[#ffeef2] text-[#5c353d]'}`}>Hi, as you optimize a small office/room to modern a small /living room.</div>
                   </div>
-
                   <div className="flex gap-3 items-start">
-                    <div className={`w-7 h-7 rounded-full shrink-0 flex items-center justify-center font-bold text-sm shadow-sm ${darkMode ? 'bg-[#4b316f] text-[#ff81a2]' : 'bg-[#ffd3de] text-[#e96b8d]'}`}>
-                      <Sparkles size={14} />
-                    </div>
-                    <div className={`p-3.5 rounded-2xl rounded-tl-none font-semibold max-w-[85%] shadow-sm ${darkMode ? 'bg-[#312149] text-[#ebdfff]' : 'bg-[#fff0f3] border border-[#fbcad4] text-[#e96b8d]'}`}>
-                      Yes, fits the modern a small office/living room?
-                    </div>
+                    <div className={`w-7 h-7 rounded-full shrink-0 flex items-center justify-center font-bold text-sm shadow-sm ${darkMode ? 'bg-[#4b316f] text-[#ff81a2]' : 'bg-[#ffd3de] text-[#e96b8d]'}`}><Sparkles size={14} /></div>
+                    <div className={`p-3.5 rounded-2xl rounded-tl-none font-semibold max-w-[85%] shadow-sm ${darkMode ? 'bg-[#312149] text-[#ebdfff]' : 'bg-[#fff0f3] border border-[#fbcad4] text-[#e96b8d]'}`}>Yes, fits the modern a small office/living room?</div>
                   </div>
-
                   <div className="flex gap-3 items-start">
                     <div className="w-7 h-7 rounded-full bg-purple-500 shrink-0 text-center text-xs leading-7 text-white font-bold">👤</div>
-                    <div className={`p-3.5 rounded-2xl rounded-tl-none font-semibold max-w-[85%] shadow-sm ${darkMode ? 'bg-[#251c36] text-[#dfd5eb]' : 'bg-[#ffeef2] text-[#5c353d]'}`}>
-                      Hew, you cant oasive the portent innovative cotematis enroll you needs.
-                    </div>
+                    <div className={`p-3.5 rounded-2xl rounded-tl-none font-semibold max-w-[85%] shadow-sm ${darkMode ? 'bg-[#251c36] text-[#dfd5eb]' : 'bg-[#ffeef2] text-[#5c353d]'}`}>Hew, you cant oasive the portent innovative cotematis enroll you needs.</div>
                   </div>
                 </div>
-
-                {/* Chat Text Input Field Container */}
                 <div className="mt-4 relative">
-                  <input
-                    type="text"
-                    placeholder="Type your reply here..."
-                    className={`w-full pl-4 pr-12 py-3.5 rounded-xl border text-sm font-semibold transition-all focus:outline-none focus:ring-2 ${
-                      darkMode ? 'bg-[#251c36] border-[#3a2d50] text-white focus:ring-[#e45d82]' : 'bg-white border-[#f7c0cc] text-[#4d2d34] focus:ring-[#e96b8d]'
-                    }`}
-                  />
-                  <button className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-colors ${
-                    darkMode ? 'text-[#e45d82] hover:bg-[#312543]' : 'text-[#e96b8d] hover:bg-[#ffeef2]'
-                  }`}>
-                    <Send size={16} />
-                  </button>
+                  <input type="text" placeholder="Type your reply here..." className={`w-full pl-4 pr-12 py-3.5 rounded-xl border text-sm font-semibold focus:outline-none ${darkMode ? 'bg-[#251c36] border-[#3a2d50] text-white' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'}`} />
+                  <button className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-lg ${darkMode ? 'text-[#e45d82]' : 'text-[#e96b8d]'}`}><Send size={16} /></button>
                 </div>
               </div>
 
-              {/* Constraints Sliders Control Card */}
-              <div className={`p-5 rounded-[24px] border flex flex-col gap-4 transition-all duration-500 ${
-                darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
-              }`}>
-                <div className="text-sm font-extrabold tracking-tight opacity-80 flex items-center gap-2">
-                  <Sliders size={16} className="text-[#e96b8d]" /> Spatial Focus: <span className="opacity-100 font-bold text-[#e96b8d]">[Max Walkway]</span>
-                </div>
-
+              <div className={`p-5 rounded-[24px] border flex flex-col gap-4 transition-all duration-500 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+                <div className="text-sm font-extrabold tracking-tight opacity-80 flex items-center gap-2"><Sliders size={16} className="text-[#e96b8d]" /> Spatial Focus: <span className="opacity-100 font-bold text-[#e96b8d]">[Max Walkway]</span></div>
                 <div>
                   <input type="range" min="1" max="100" defaultValue="45" className="w-full accent-[#e96b8d] h-[6px] bg-gray-300 rounded-lg appearance-none cursor-pointer" />
-                  <div className="flex justify-between text-xs font-bold opacity-60 mt-2">
-                    <span>Max</span>
-                    <span>Max Seating</span>
-                  </div>
+                  <div className="flex justify-between text-xs font-bold opacity-60 mt-2"><span>Max</span><span>Max Seating</span></div>
                 </div>
-
                 <div>
-                  <div className="text-sm font-extrabold tracking-tight opacity-80 mb-1">
-                    Budget: <span className="opacity-100 font-bold text-[#e96b8d]">[Low - High]</span>
-                  </div>
+                  <div className="text-sm font-extrabold tracking-tight opacity-80 mb-1">Budget: <span className="opacity-100 font-bold text-[#e96b8d]">[Low - High]</span></div>
                   <input type="range" min="1" max="100" defaultValue="25" className="w-full accent-[#e96b8d] h-[6px] bg-gray-300 rounded-lg appearance-none cursor-pointer" />
-                  <div className="flex justify-between text-xs font-bold opacity-60 mt-2">
-                    <span>Low</span>
-                    <span>High</span>
-                  </div>
+                  <div className="flex justify-between text-xs font-bold opacity-60 mt-2"><span>Low</span><span>High</span></div>
                 </div>
               </div>
             </aside>
 
-            {/* CENTER PANEL: 3D CANVAS (Locked at 44% width) */}
             <main className="w-[44%] rounded-[28px] overflow-hidden relative border border-black/5 shadow-md bg-[#2b2538] shrink-0">
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-all duration-700"
-                style={{
-                  backgroundImage: darkMode
-                    ? `linear-gradient(to bottom, rgba(21,15,32,0.45), rgba(21,15,32,0.65)), url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80')`
-                    : `linear-gradient(to bottom, rgba(255,238,242,0.01), rgba(255,238,242,0.05)), url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80')`
-                }}
-              />
-
+              <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80')` }} />
               <div className="absolute top-5 right-5 flex flex-col gap-2.5">
-                <button className={`p-2.5 rounded-xl border shadow-md transition-all hover:scale-105 ${
-                  darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#e45d82]' : 'bg-white/95 border-[#fad5de] text-[#e96b8d]'
-                }`}>
-                  <Smartphone size={18} />
-                </button>
-                <button className={`w-10 h-10 rounded-xl border shadow-md font-extrabold text-sm flex items-center justify-center transition-all hover:scale-105 ${
-                  darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#a591bf]' : 'bg-white/95 border-[#fad5de] text-[#7d515a]'
-                }`}>
-                  3D
-                </button>
+                <button className={`p-2.5 rounded-xl border shadow-md ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#e45d82]' : 'bg-white/95 border-[#fad5de] text-[#e96b8d]'}`}><Smartphone size={18} /></button>
+                <button className={`w-10 h-10 rounded-xl border shadow-md font-extrabold text-sm flex items-center justify-center ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#a591bf]' : 'bg-white/95 border-[#fad5de] text-[#7d515a]'}`}>3D</button>
               </div>
-
               <div className="absolute bottom-5 right-5 flex flex-col gap-2.5 w-[150px]">
-                <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between transition-all hover:translate-y-[-2px] ${
-                  darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'
-                }`}>
-                  <span className="flex items-center gap-2"><Smartphone size={14} /> WebXR</span>
-                  <span>📋</span>
-                </button>
-                <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between transition-all hover:translate-y-[-2px] ${
-                  darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'
-                }`}>
-                  <span className="flex items-center gap-2"><Users size={14} /> Multiplayer</span>
-                  <span>👥</span>
-                </button>
+                <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between ${darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'}`}><span className="flex items-center gap-2"><Smartphone size={14} /> WebXR</span><span>📋</span></button>
+                <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between ${darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'}`}><span className="flex items-center gap-2"><Users size={14} /> Multiplayer</span><span>👥</span></button>
               </div>
             </main>
 
-            {/* RIGHT SIDEBAR PANEL: LIVE ITEM CATALOG (Locked at 28% width) */}
-            <aside className={`w-[28%] rounded-[24px] p-5 border flex flex-col h-full shrink-0 min-w-[340px] transition-all duration-500 ${
-              darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
-            }`}>
-              <div className="pb-3 border-b border-dashed border-current opacity-50 text-sm font-bold tracking-wider mb-4 flex items-center justify-between">
-                <span className="text-base font-bold">Assets</span>
-                <MoreHorizontal size={18} />
+            <aside className={`w-[28%] rounded-[24px] p-5 border flex flex-col h-full shrink-0 min-w-[340px] ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+              <div className="pb-3 border-b border-dashed border-current opacity-50 text-sm font-bold tracking-wider mb-4 flex items-center justify-between"><span className="text-base font-bold">Assets</span><MoreHorizontal size={18} /></div>
+              <div className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-extrabold mb-4 ${darkMode ? 'bg-[#251c36] text-[#bdaed0]' : 'bg-[#ffeef2] text-[#7d4853]'}`}>
+                <span className="flex items-center gap-2 text-sm">📂 Furniture</span><ChevronDown size={16} />
               </div>
-
-              <div className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-extrabold mb-4 shadow-sm ${
-                darkMode ? 'bg-[#251c36] text-[#bdaed0]' : 'bg-[#ffeef2] text-[#7d4853]'
-              }`}>
-                <span className="flex items-center gap-2 text-sm">📂 Furniture</span>
-                <ChevronDown size={16} />
-              </div>
-
               <div className="flex-1 overflow-y-auto space-y-3.5 pr-1 scrollbar-none">
                 {assets.map((asset) => (
-                  <div key={asset.id} className={`p-3.5 rounded-[20px] border text-xs flex gap-4 items-center transition-all duration-300 ${
-                    darkMode ? 'bg-[#1e162c]/60 border-[#342749] hover:border-[#e45d82]' : 'bg-white border-[#fbd3dc] hover:border-[#e96b8d] shadow-sm'
-                  }`}>
-                    <div className={`w-16 h-14 rounded-xl flex items-center justify-center font-bold text-2xl shrink-0 border transition-colors ${
-                      darkMode ? 'bg-[#271d39] border-[#3d2f57]' : 'bg-[#fff0f3] border-[#fde2e8]'
-                    }`}>
-                      🛋️
-                    </div>
-
+                  <div key={asset.id} className={`p-3.5 rounded-[20px] border text-xs flex gap-4 items-center ${darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc]'}`}>
+                    <div className={`w-16 h-14 rounded-xl flex items-center justify-center font-bold text-2xl shrink-0 border ${darkMode ? 'bg-[#271d39] border-[#3d2f57]' : 'bg-[#fff0f3] border-[#fde2e8]'}`}>🛋️</div>
                     <div className="flex-1 min-w-0 flex flex-col gap-1">
                       <p className="font-extrabold text-sm tracking-tight truncate">{asset.name}</p>
                       <p className="opacity-60 text-xs font-bold truncate">{asset.size}</p>
                       <p className="font-black text-sm text-[#e96b8d] mt-0.5">{asset.price}</p>
                     </div>
-
                     <div className="flex flex-col gap-2 shrink-0">
-                      <button className={`px-3 py-1.5 rounded-lg text-xs font-extrabold tracking-tight shadow-sm transition-colors ${
-                        darkMode ? 'bg-[#3b275c] text-[#ff8bb0] hover:bg-[#483070]' : 'bg-[#ffeef2] text-[#e96b8d] hover:bg-[#ffd3de]'
-                      }`}>
-                        Details
-                      </button>
-                      <button className="opacity-50 hover:opacity-100 flex items-center justify-center py-0.5 transition-opacity">
-                        <ExternalLink size={14} />
-                      </button>
+                      <button className={`px-3 py-1.5 rounded-lg text-xs font-extrabold tracking-tight ${darkMode ? 'bg-[#3b275c] text-[#ff8bb0]' : 'bg-[#ffeef2] text-[#e96b8d]'}`}>Details</button>
+                      <button className="opacity-50 hover:opacity-100 flex items-center justify-center py-0.5"><ExternalLink size={14} /></button>
                     </div>
                   </div>
                 ))}
               </div>
             </aside>
           </div>
-        ) : (
-          /* -----------------------------------------------------------------------
-              CONFIGURATION VIEW 2: DYNAMIC HISTORY DIRECTORY PAGE
-             ----------------------------------------------------------------------- */
+        )}
+
+        {currentView === 'history' && (
+          /* VIEW 2: DYNAMIC HISTORY CHECKPOINT DIRECTORY */
+          <div className="flex-1 flex flex-col overflow-hidden p-6 animate-in fade-in duration-300">
+            <div className="flex items-center justify-between mb-5 shrink-0">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setCurrentView('workspace')} className={`p-2 rounded-full border ${darkMode ? 'border-[#3d2e53] bg-[#241a35] text-[#d4c6e3]' : 'border-[#f3bece] bg-white text-[#7d4853]'}`}><ArrowLeft size={16} /></button>
+                <h2 className="text-2xl font-black tracking-tight">📂 Your Previous Works</h2>
+              </div>
+              <span className="text-xs opacity-60 font-bold tracking-wide">Showing {historyTemplates.length} Saved Design Checkpoints</span>
+            </div>
+            <div className="grid grid-cols-3 gap-5 shrink-0 mb-6">
+              {historyTemplates.map((template) => (
+                <div key={template.id} onClick={() => setSelectedTemplate(template.id)} className={`border rounded-2xl overflow-hidden cursor-pointer p-3 ${selectedTemplate === template.id ? 'border-[#e96b8d]' : 'bg-white border-[#fbd3dc]'}`}>
+                  <div className="h-28 w-full rounded-xl overflow-hidden relative mb-2.5">
+                    <img src={template.img} alt={template.title} className="w-full h-full object-cover" />
+                    <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/60 text-[10px] text-white font-black">{template.date}</div>
+                  </div>
+                  <p className="font-extrabold text-sm truncate">{template.title}</p>
+                </div>
+              ))}
+            </div>
+            <div className="flex-1 flex overflow-hidden gap-6">
+              <div className={`w-[28%] rounded-2xl p-5 border flex flex-col min-w-[340px] shrink-0 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+                <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase tracking-wider mb-3">💬 Chat Summary</div>
+                <div className="flex-1 overflow-y-auto space-y-3 pr-1 text-[13px] font-medium leading-relaxed">
+                  {currentTemplateData.chatSummary.map((log, index) => (
+                    <div key={index} className={`p-3 rounded-xl border ${log.startsWith('User:') ? darkMode ? 'bg-[#251c36] text-[#dfd5eb]' : 'bg-[#ffeef2] text-[#5c353d]' : darkMode ? 'bg-[#312149] border-[#3d2e53] text-[#ebdfff]' : 'bg-[#fff0f3] border-[#fbcad4] text-[#e96b8d]'}`}><p className="font-semibold">{log}</p></div>
+                  ))}
+                </div>
+              </div>
+              <div className="w-[44%] rounded-2xl overflow-hidden relative border border-black/5 shadow-md bg-[#2b2538] shrink-0 flex flex-col">
+                <img src={currentTemplateData.img} alt="Finalized render" className="w-full h-full object-cover" />
+              </div>
+              <div className={`w-[28%] rounded-2xl p-5 border flex flex-col min-w-[340px] shrink-0 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+                <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase tracking-wider mb-3">🔗 Shortlisted Links</div>
+                <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+                  {currentTemplateData.shortlisted.map((link, index) => (
+                    <div key={index} className={`p-3 rounded-xl border flex items-center justify-between text-xs ${darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc]'}`}>
+                      <div className="min-w-0 flex-1 pr-2"><p className="font-extrabold truncate">{link.name}</p><p className="font-black text-[#e96b8d] mt-0.5">{link.price}</p></div>
+                      <button className={`p-2 rounded-lg flex items-center gap-1 text-[11px] font-bold shrink-0 ${darkMode ? 'bg-[#3b275c] text-[#ff8bb0]' : 'bg-[#ffeef2] text-[#e96b8d]'}`}><span>Buy Link</span><ExternalLink size={12} /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            VIEW 3: THE SPECIFICATION INPUTS AND USER PREFERENCES TOOLKIT
+           ========================================================================= */}
+        {currentView === 'preferences' && (
           <div className="flex-1 flex flex-col overflow-hidden p-6 animate-in fade-in duration-300">
             
-            {/* Header Title Section Bar Row */}
-            <div className="flex items-center justify-between mb-5 shrink-0">
+            {/* Nav Header Row */}
+            <div className="flex items-center justify-between mb-6 shrink-0">
               <div className="flex items-center gap-3">
                 <button 
                   onClick={() => setCurrentView('workspace')} 
@@ -367,103 +334,235 @@ export default function App() {
                 >
                   <ArrowLeft size={16} />
                 </button>
-                <h2 className="text-2xl font-black tracking-tight flex items-center gap-2">
-                  📂 Your Previous Works
-                </h2>
+                <h2 className="text-2xl font-black tracking-tight">⚙️ User Design Specifications</h2>
               </div>
-              <span className="text-xs opacity-60 font-bold tracking-wide">
-                Showing {historyTemplates.length} Saved Design Checkpoints
-              </span>
             </div>
 
-            {/* Top Row Grid Selection: Horizontal List Cards Grid */}
-            <div className="grid grid-cols-3 gap-5 shrink-0 mb-6">
-              {historyTemplates.map((template) => (
-                <div 
-                  key={template.id}
-                  onClick={() => setSelectedTemplate(template.id)}
-                  className={`border rounded-2xl overflow-hidden cursor-pointer p-3 transition-all duration-300 transform ${
-                    selectedTemplate === template.id 
-                      ? 'border-[#e96b8d] scale-[1.01] shadow-md ring-2 ring-[#e96b8d]/20' 
-                      : darkMode ? 'bg-[#1e162c]/40 border-[#342749] hover:border-[#e45d82]/50' : 'bg-white border-[#fbd3dc] hover:border-[#e96b8d]/50 shadow-sm'
-                  }`}
-                >
-                  <div className="h-28 w-full rounded-xl overflow-hidden relative mb-2.5">
-                    <img src={template.img} alt={template.title} className="w-full h-full object-cover" />
-                    <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[10px] text-white font-black">
-                      {template.date}
+            {/* Split Input Grid Workspace (Proportional Splits: 28% | 44% | 28%) */}
+            <div className="flex-1 flex overflow-hidden gap-6">
+
+              {/* LEFT BLOCK (28% Width Split): Structural Directives */}
+              <div className={`w-[28%] rounded-2xl p-5 border flex flex-col min-w-[330px] shrink-0 transition-colors duration-500 ${
+                darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
+              }`}>
+                <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase tracking-wider mb-5 flex items-center gap-2">
+                  <SlidersHorizontal size={14} /> Adjustments & Goals
+                </div>
+
+                <div className="space-y-6 flex-1 overflow-y-auto pr-1">
+                  <div>
+                    <label className="text-xs font-black block mb-2 opacity-80">Optimize Spatial Layout For:</label>
+                    <div className="flex flex-col gap-2">
+                      {[
+                        { id: 'flow', label: '🚶 Maximize Flow & Walkways' },
+                        { id: 'seating', label: '🛋️ Expand Seating Capacity' },
+                        { id: 'workzone', label: '🖥️ Define Dedicated Workzone' }
+                      ].map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => setLayoutAdjustment(item.id)}
+                          className={`w-full py-3 px-4 rounded-xl border text-left text-xs font-bold transition-all ${
+                            layoutAdjustment === item.id 
+                              ? 'bg-[#e96b8d] border-transparent text-white shadow-sm' 
+                              : darkMode 
+                                ? 'bg-[#251c36] border-[#3d2e53] text-[#dfd5eb] hover:bg-[#2f2445]' 
+                                : 'bg-white border-[#fbd3dc] hover:bg-[#ffeef2]'
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                  <p className="font-extrabold text-sm truncate">{template.title}</p>
-                </div>
-              ))}
-            </div>
 
-            {/* Split View 3-Column Workstation: Exact 28% | 44% | 28% Proportional Balance Block */}
-            <div className="flex-1 flex overflow-hidden gap-6">
-              
-              {/* Left Column Window Matrix: Chat Summary (28% Balanced Workspace Width) */}
-              <div className={`w-[28%] rounded-2xl p-5 border flex flex-col min-w-[340px] shrink-0 ${
-                darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
-              }`}>
-                <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase tracking-wider mb-3">
-                  💬 Chat Summary
-                </div>
-                <div className="flex-1 overflow-y-auto space-y-3 pr-1 text-[13px] font-medium leading-relaxed">
-                  {currentTemplateData.chatSummary.map((log, index) => (
-                    <div 
-                      key={index} 
-                      className={`p-3 rounded-xl border ${
-                        log.startsWith('User:') 
-                          ? darkMode ? 'bg-[#251c36] border-transparent text-[#dfd5eb]' : 'bg-[#ffeef2] border-transparent text-[#5c353d]'
-                          : darkMode ? 'bg-[#312149] border-[#3d2e53] text-[#ebdfff]' : 'bg-[#fff0f3] border-[#fbcad4] text-[#e96b8d]'
+                  <div className="pt-2">
+                    <label className="text-xs font-black block mb-2 opacity-80">Select Design Type Ruleset:</label>
+                    <select 
+                      value={designStyle} 
+                      onChange={(e) => setDesignStyle(e.target.value)} 
+                      className={`w-full px-3 py-3 rounded-xl border text-xs font-bold focus:outline-none transition-colors ${
+                        darkMode ? 'bg-[#251c36] border-[#3d2e53] text-[#dfd5eb]' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
                       }`}
                     >
-                      <p className="font-semibold">{log}</p>
-                    </div>
-                  ))}
+                      <option value="japandi" className={darkMode ? 'bg-[#1e172c]' : ''}>Japandi Minimalist</option>
+                      <option value="industrial" className={darkMode ? 'bg-[#1e172c]' : ''}>Modern Industrial Loft</option>
+                      <option value="biophilic" className={darkMode ? 'bg-[#1e172c]' : ''}>Biophilic Scandinavian</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              {/* Center Column Window Matrix: Finalized Render View (44% Balanced Workspace Width) */}
-              <div className="w-[44%] rounded-2xl overflow-hidden relative border border-black/5 shadow-md bg-[#2b2538] shrink-0 flex flex-col">
-                <div className="absolute top-4 left-4 z-10 px-3 py-1 bg-black/60 backdrop-blur-md rounded-lg text-[11px] text-white font-black tracking-wider flex items-center gap-2">
-                  <span>🖼️ Finalized Render Preview</span>
-                </div>
-                <img 
-                  src={currentTemplateData.img} 
-                  alt="Finalized design canvas configuration setup" 
-                  className="w-full h-full object-cover transition-all duration-500"
-                />
-              </div>
-
-              {/* Right Column Window Matrix: Shortlisted Links (28% Balanced Workspace Width) */}
-              <div className={`w-[28%] rounded-2xl p-5 border flex flex-col min-w-[340px] shrink-0 ${
+              {/* CENTER BLOCK (44% Width Split): Main Configuration Fields */}
+              <div className={`w-[44%] rounded-2xl p-5 border flex flex-col shrink-0 transition-colors duration-500 ${
                 darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
               }`}>
-                <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase tracking-wider mb-3">
-                  🔗 Shortlisted Links
+                <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase tracking-wider mb-5 flex items-center gap-2">
+                  <Layers size={14} /> Core Spatial Bounds
                 </div>
-                <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-                  {currentTemplateData.shortlisted.map((link, index) => (
-                    <div 
-                      key={index} 
-                      className={`p-3 rounded-xl border flex items-center justify-between text-xs transition-all ${
-                        darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc] shadow-xs'
-                      }`}
-                    >
-                      <div className="min-w-0 flex-1 pr-2">
-                        <p className="font-extrabold truncate">{link.name}</p>
-                        <p className="font-black text-[#e96b8d] mt-0.5">{link.price}</p>
+
+                <div className="space-y-5 flex-1 overflow-y-auto pr-1">
+                  
+                  {/* Room Dimensions Inputs Group (Breadth x Width x Height Layout) */}
+                  <div className={`p-4 rounded-xl border transition-colors ${darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc]'}`}>
+                    <label className="text-xs font-black block mb-3 opacity-90">Room Dimensions (Feet)</label>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-wider opacity-50 block mb-1.5">Breadth</span>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. 14" 
+                          value={roomBreadth} 
+                          onChange={(e) => setRoomBreadth(e.target.value)} 
+                          className={`w-full p-2.5 border rounded-lg text-xs font-bold focus:outline-none transition-colors ${
+                            darkMode ? 'bg-[#251c36] border-[#3d2e53] text-white placeholder-gray-600' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
+                          }`} 
+                        />
                       </div>
-                      <button className={`p-2 rounded-lg transition-colors flex items-center gap-1 text-[11px] font-bold shrink-0 ${
-                        darkMode ? 'bg-[#3b275c] text-[#ff8bb0] hover:bg-[#483070]' : 'bg-[#ffeef2] text-[#e96b8d] hover:bg-[#ffd3de]'
-                      }`}>
-                        <span>Buy Link</span>
-                        <ExternalLink size={12} />
-                      </button>
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-wider opacity-50 block mb-1.5">Width</span>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. 18" 
+                          value={roomWidth} 
+                          onChange={(e) => setRoomWidth(e.target.value)} 
+                          className={`w-full p-2.5 border rounded-lg text-xs font-bold focus:outline-none transition-colors ${
+                            darkMode ? 'bg-[#251c36] border-[#3d2e53] text-white placeholder-gray-600' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
+                          }`} 
+                        />
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-wider opacity-50 block mb-1.5">Height</span>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. 9" 
+                          value={roomHeight} 
+                          onChange={(e) => setRoomHeight(e.target.value)} 
+                          className={`w-full p-2.5 border rounded-lg text-xs font-bold focus:outline-none transition-colors ${
+                            darkMode ? 'bg-[#251c36] border-[#3d2e53] text-white placeholder-gray-600' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
+                          }`} 
+                        />
+                      </div>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Swatch Palette Grid Mapping Component Selector */}
+                  <div className={`p-4 rounded-xl border transition-colors ${darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc]'}`}>
+                    <label className="text-xs font-black block mb-1 opacity-90 flex items-center gap-1.5"><Palette size={14} /> Color Palette Shades</label>
+                    <p className="text-[11px] opacity-60 font-semibold mb-3">Select your targeted accent profile using your cursor:</p>
+                    
+                    <div className="space-y-2.5">
+                      {colorPalettes.map((p) => (
+                        <div 
+                          key={p.id}
+                          onClick={() => setSelectedPalette(p.id)}
+                          className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
+                            selectedPalette === p.id 
+                              ? darkMode ? 'border-[#e45d82] bg-[#2d1b33]' : 'border-[#e96b8d] bg-[#ffeef2]' 
+                              : darkMode ? 'border-[#3d2e53] bg-[#251c36]/40 hover:bg-[#2b203d]' : 'border-[#f2f2f2] hover:bg-gray-50'
+                          }`}
+                        >
+                          <span className="text-xs font-bold opacity-80">{p.name}</span>
+                          <div className={`flex gap-1.5 p-1 border rounded-lg ${darkMode ? 'bg-[#150f20] border-[#3d2e53]' : 'bg-white'}`}>
+                            {p.shades.map((shade, i) => (
+                              <div key={i} className="w-5 h-5 rounded-md border border-black/5" style={{ backgroundColor: shade }} />
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Budget Slider Row */}
+                  <div className={`p-4 rounded-xl border transition-colors ${darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc]'}`}>
+                    <label className="text-xs font-black block mb-2 opacity-90 flex items-center gap-1"><DollarSign size={14} /> Project Budget Constraints</label>
+                    <input 
+                      type="range" 
+                      min="500" 
+                      max="10000" 
+                      step="500"
+                      value={budgetMax} 
+                      onChange={(e) => setBudgetMax(Number(e.target.value))}
+                      className="w-full accent-[#e96b8d] h-[6px] bg-gray-200 rounded-lg cursor-pointer appearance-none dark:bg-gray-700" 
+                    />
+                    <div className="flex justify-between text-xs font-black text-[#e96b8d] mt-2">
+                      <span className="opacity-40 text-gray-500">$500 Min</span>
+                      <span>Selected Limit: ${budgetMax.toLocaleString()}</span>
+                      <span className="opacity-40 text-gray-500">$10,000+ Max</span>
+                    </div>
+                  </div>
+
+                  {/* Room & Occupant Increment Matrix Counters */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className={`p-4 rounded-xl border transition-colors ${darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc]'}`}>
+                      <label className="text-xs font-black opacity-90 block mb-2">No. of Rooms</label>
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => setRoomCount(Math.max(1, roomCount - 1))} className={`w-8 h-8 rounded-lg font-black text-sm flex items-center justify-center transition-colors ${darkMode ? 'bg-[#312543] text-white hover:bg-[#3d2e53]' : 'bg-gray-100 hover:bg-gray-200'}`}>-</button>
+                        <span className="text-sm font-black text-[#e96b8d]">{roomCount}</span>
+                        <button onClick={() => setRoomCount(roomCount + 1)} className={`w-8 h-8 rounded-lg font-black text-sm flex items-center justify-center transition-colors ${darkMode ? 'bg-[#312543] text-white hover:bg-[#3d2e53]' : 'bg-gray-100 hover:bg-gray-200'}`}>+</button>
+                      </div>
+                    </div>
+
+                    <div className={`p-4 rounded-xl border transition-colors ${darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc]'}`}>
+                      <label className="text-xs font-black opacity-90 block mb-2">No. of People</label>
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => setPeopleCount(Math.max(1, peopleCount - 1))} className={`w-8 h-8 rounded-lg font-black text-sm flex items-center justify-center transition-colors ${darkMode ? 'bg-[#312543] text-white hover:bg-[#3d2e53]' : 'bg-gray-100 hover:bg-gray-200'}`}>-</button>
+                        <span className="text-sm font-black text-[#e96b8d]">{peopleCount}</span>
+                        <button onClick={() => setPeopleCount(peopleCount + 1)} className={`w-8 h-8 rounded-lg font-black text-sm flex items-center justify-center transition-colors ${darkMode ? 'bg-[#312543] text-white hover:bg-[#3d2e53]' : 'bg-gray-100 hover:bg-gray-200'}`}>+</button>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* RIGHT BLOCK (28% Width Split): Additional Environmental Context */}
+              <div className={`w-[28%] rounded-2xl p-5 border flex flex-col min-w-[330px] shrink-0 transition-colors duration-500 ${
+                darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
+              }`}>
+                <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase tracking-wider mb-5 flex items-center gap-2">
+                  <Home size={14} /> Environmental Factors
+                </div>
+
+                <div className="space-y-5 flex-1 overflow-y-auto pr-1">
+                  <div>
+                    <label className="text-xs font-black block mb-2 opacity-80 flex items-center gap-1"><Compass size={13} /> Window Facing Direction</label>
+                    <select 
+                      value={windowFacing} 
+                      onChange={(e) => setWindowFacing(e.target.value)} 
+                      className={`w-full p-2.5 border rounded-xl text-xs font-bold focus:outline-none transition-colors ${
+                        darkMode ? 'bg-[#251c36] border-[#3d2e53] text-[#dfd5eb]' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
+                      }`}
+                    >
+                      <option value="south" className={darkMode ? 'bg-[#1e172c]' : ''}>South Facing (High Sunlight)</option>
+                      <option value="north" className={darkMode ? 'bg-[#1e172c]' : ''}>North Facing (Cool Indirect Light)</option>
+                      <option value="east" className={darkMode ? 'bg-[#1e172c]' : ''}>East Facing (Morning Sun Bias)</option>
+                      <option value="west" className={darkMode ? 'bg-[#1e172c]' : ''}>West Facing (Evening Glow Bias)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-black block mb-2 opacity-80 flex items-center gap-1"><Eye size={13} /> Base Flooring Texture</label>
+                    <select 
+                      value={flooringType} 
+                      onChange={(e) => setFlooringType(e.target.value)} 
+                      className={`w-full p-2.5 border rounded-xl text-xs font-bold focus:outline-none transition-colors ${
+                        darkMode ? 'bg-[#251c36] border-[#3d2e53] text-[#dfd5eb]' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
+                      }`}
+                    >
+                      <option value="hardwood" className={darkMode ? 'bg-[#1e172c]' : ''}>Natural Oak Hardwood</option>
+                      <option value="concrete" className={darkMode ? 'bg-[#1e172c]' : ''}>Polished Industrial Concrete</option>
+                      <option value="carpet" className={darkMode ? 'bg-[#1e172c]' : ''}>Low-Pile Studio Carpet</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-black opacity-90 block mb-2">Required Active Workstations</label>
+                    <div className="flex items-center gap-3">
+                      <button onClick={() => setWorkstations(Math.max(0, workstations - 1))} className={`w-8 h-8 rounded-lg font-black text-sm flex items-center justify-center transition-colors ${darkMode ? 'bg-[#312543] text-white hover:bg-[#3d2e53]' : 'bg-gray-100 hover:bg-gray-200'}`}>-</button>
+                      <span className="text-sm font-black text-[#e96b8d]">{workstations}</span>
+                      <button onClick={() => setWorkstations(workstations + 1)} className={`w-8 h-8 rounded-lg font-black text-sm flex items-center justify-center transition-colors ${darkMode ? 'bg-[#312543] text-white hover:bg-[#3d2e53]' : 'bg-gray-100 hover:bg-gray-200'}`}>+</button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
