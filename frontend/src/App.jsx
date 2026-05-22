@@ -167,7 +167,10 @@ export default function App() {
                     <span className="flex items-center gap-2.5"><Sliders size={16} className="text-[#e96b8d]" /> Preference</span>
                     <ChevronRight size={12} className="opacity-40" />
                   </button>
-                  <button onClick={() => setIsSettingsOpen(false)} className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs text-left transition-colors ${darkMode ? 'hover:bg-[#251c36] text-[#dfd5eb]' : 'hover:bg-[#ffeef2] text-[#5c353d]'}`}>
+                  <button 
+                    onClick={() => { setCurrentView('platform'); setIsSettingsOpen(false); }} 
+                    className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs text-left transition-colors ${darkMode ? 'hover:bg-[#251c36] text-[#dfd5eb]' : 'hover:bg-[#ffeef2] text-[#5c353d]'}`}
+                  >
                     <span className="flex items-center gap-2.5"><Cpu size={16} className="text-[#e96b8d]" /> Platform Engine</span>
                     <ChevronRight size={12} className="opacity-40" />
                   </button>
@@ -569,6 +572,99 @@ export default function App() {
             </div>
           </div>
         )}
+        {/* =========================================================================
+    VIEW 4: PLATFORM ENGINE - COMMAND CENTER
+   ========================================================================= */}
+{currentView === 'platform' && (
+  <div className="flex-1 flex flex-col overflow-hidden p-6 animate-in fade-in duration-300">
+    
+    {/* Header */}
+    <div className="flex items-center justify-between mb-6 shrink-0">
+      <div className="flex items-center gap-3">
+        <button 
+          onClick={() => setCurrentView('workspace')} 
+          className={`p-2 rounded-full border transition-all ${darkMode ? 'border-[#3d2e53] bg-[#241a35] text-[#d4c6e3]' : 'border-[#f3bece] bg-white text-[#7d4853]'}`}
+        >
+          <ArrowLeft size={16} />
+        </button>
+        <h2 className="text-2xl font-black tracking-tight">⚙️ Platform Engine</h2>
+      </div>
+    </div>
+
+    {/* Main Grid: 28% | 44% | 28% */}
+    <div className="flex-1 flex overflow-hidden gap-6">
+
+      {/* LEFT: Computational & Plugins (28%) */}
+      <div className="w-[28%] flex flex-col gap-6 min-w-[330px] shrink-0">
+        {/* 1. Computational Design */}
+        <div className={`rounded-2xl p-5 border flex-1 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+          <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase mb-4 flex items-center gap-2">
+            <Cpu size={14} /> 1. Computational Design
+          </div>
+          <button className="w-full py-3 bg-[#e96b8d] text-white rounded-xl font-black text-xs hover:opacity-90 transition-all mb-4">Run Optimization</button>
+          <div className="flex items-center justify-between text-xs font-bold p-3 rounded-lg border border-dashed border-[#e96b8d]/30">
+            <span>Physics Simulation</span>
+            <div className={`w-8 h-4 rounded-full relative ${darkMode ? 'bg-[#312543]' : 'bg-gray-200'}`}>
+              <div className="absolute left-0.5 top-0.5 w-3 h-3 bg-[#e96b8d] rounded-full" />
+            </div>
+          </div>
+        </div>
+
+        {/* 2. API & Plugins */}
+        <div className={`rounded-2xl p-5 border flex-1 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+          <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase mb-4 flex items-center gap-2">
+            <Layers size={14} /> 2. API & Plugins
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {['Asset Sync', 'High Fidelity'].map(opt => (
+              <button key={opt} className={`p-2 rounded-lg text-[10px] font-black border ${darkMode ? 'border-[#312543] bg-[#251c36]' : 'border-[#fbd3dc] bg-white'}`}>{opt}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* CENTER: Logs & Debugging (44%) */}
+      <div className={`w-[44%] rounded-2xl p-5 border flex flex-col ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+        <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase mb-5 flex items-center gap-2">
+          <Info size={14} /> 3. Logs & Debugging
+        </div>
+        <div className={`flex-1 p-4 rounded-xl font-mono text-[11px] overflow-y-auto ${darkMode ? 'bg-[#000] text-green-500' : 'bg-gray-900 text-green-400'}`}>
+          <p> Initializing geometry engine...</p>
+          <p> Constraint check: Room_Breadth_Min_Met [PASS]</p>
+          <p> Calculating ergonomic flow paths...</p>
+          <p> Compute Latency: 0.42ms [STABLE]</p>
+        </div>
+      </div>
+
+      {/* RIGHT: Export & Status (28%) */}
+      <div className="w-[28%] flex flex-col gap-6 min-w-[330px] shrink-0">
+        {/* 4. Export & Deployment */}
+        <div className={`rounded-2xl p-5 border flex-1 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+          <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase mb-4 flex items-center gap-2">
+            <ExternalLink size={14} /> 4. Export & Deployment
+          </div>
+          <div className="space-y-2">
+            <button className="w-full py-2 rounded-lg text-xs font-black border border-[#e96b8d] text-[#e96b8d] hover:bg-[#e96b8d] hover:text-white transition-all">WebXR Export</button>
+            <button className="w-full py-2 rounded-lg text-xs font-black border border-[#e96b8d] text-[#e96b8d] hover:bg-[#e96b8d] hover:text-white transition-all">Collaborator Sync</button>
+          </div>
+        </div>
+        
+        {/* Summary Checklist */}
+        <div className={`rounded-2xl p-5 border ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+          <div className="text-[10px] font-black uppercase opacity-50 mb-3">Quick Checklist</div>
+          <div className="space-y-2">
+            {['Verify Constraints', 'Initiate Solve', 'Spatial Focus'].map(item => (
+              <div key={item} className="flex items-center gap-2 text-[11px] font-bold opacity-70">
+                <div className="w-3 h-3 rounded-sm border border-current"></div> {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+)}
 
       </div>
     </div>
