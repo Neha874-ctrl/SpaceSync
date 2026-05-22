@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import {
   MessageSquare, Sparkles, Sliders, LayoutGrid,
   Users, Smartphone, Sun, Moon, Send, MoreHorizontal,
-  ChevronDown, Info, ExternalLink
+  ChevronDown, Info, ExternalLink, Settings, History, Cpu, ChevronRight
 } from 'lucide-react';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
+  // Toggle for the independent floating settings dropdown menu
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Reference Mock Data mapped exactly to your design layout assets
   const assets = [
@@ -50,9 +52,42 @@ export default function App() {
             }`}>
               <Users size={18} /> Collaborate
             </button>
+            
             <button className="px-6 py-2.5 rounded-full text-sm font-extrabold text-white shadow-md bg-gradient-to-r from-[#e96b8d] to-[#ef88a3] hover:opacity-90 transition-all">
               + Create Design
             </button>
+
+            {/* FLOATING SETTINGS MENU DROPDOWN ICON TRIGGER */}
+            <div className="relative">
+              <button 
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                className={`p-2.5 rounded-full border shadow-sm transition-all flex items-center justify-center ${
+                  darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#e45d82]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#e96b8d]'
+                }`}
+              >
+                <Settings size={18} className={isSettingsOpen ? 'rotate-45 transition-transform' : 'transition-transform'} />
+              </button>
+
+              {/* Absolute Dropdown - Floating wrapper that doesn't push the layout */}
+              {isSettingsOpen && (
+                <div className={`absolute right-0 mt-3 w-60 rounded-2xl border shadow-xl z-50 p-1.5 transition-all animate-in fade-in zoom-in-95 duration-150 ${
+                  darkMode ? 'bg-[#1e172c] border-[#3d2e53]' : 'bg-white border-[#f7b0be]'
+                }`}>
+                  <button onClick={() => setIsSettingsOpen(false)} className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs text-left transition-colors ${darkMode ? 'hover:bg-[#251c36] text-[#dfd5eb]' : 'hover:bg-[#ffeef2] text-[#5c353d]'}`}>
+                    <span className="flex items-center gap-2.5"><History size={16} className="text-[#e96b8d]" /> History</span>
+                    <ChevronRight size={12} className="opacity-40" />
+                  </button>
+                  <button onClick={() => setIsSettingsOpen(false)} className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs text-left transition-colors ${darkMode ? 'hover:bg-[#251c36] text-[#dfd5eb]' : 'hover:bg-[#ffeef2] text-[#5c353d]'}`}>
+                    <span className="flex items-center gap-2.5"><Sliders size={16} className="text-[#e96b8d]" /> Preference</span>
+                    <ChevronRight size={12} className="opacity-40" />
+                  </button>
+                  <button onClick={() => setIsSettingsOpen(false)} className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs text-left transition-colors ${darkMode ? 'hover:bg-[#251c36] text-[#dfd5eb]' : 'hover:bg-[#ffeef2] text-[#5c353d]'}`}>
+                    <span className="flex items-center gap-2.5"><Cpu size={16} className="text-[#e96b8d]" /> Platform Engine</span>
+                    <ChevronRight size={12} className="opacity-40" />
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Functional Theme Toggle Switch */}
             <div className={`flex items-center rounded-full p-1 border gap-1 transition-colors ${
