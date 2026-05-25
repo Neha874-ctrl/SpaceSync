@@ -76,16 +76,21 @@ export default function App() {
   const [emailInput, setEmailInput] = useState('');
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
-  const [currentUser, setCurrentUser] = useState(null);
+  //const [currentUser, setCurrentUser] = useState(null);
   const [authError, setAuthError] = useState('');
   const [authMessage, setAuthMessage] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
-  const [isToolsOpen, setIsToolsOpen] = useState(false);
+  const [isToolsOpen, setIsToolsOpen] = useState(false); 
+
+  // 2. FIXED: Persistent state initialization for user
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem('spaceSyncUser');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
-    setAuthError('');
-    setAuthMessage('');
     setAuthLoading(true);
 
     const url = isRegisterMode ? 'http://localhost:3001/api/register' : 'http://localhost:3001/api/login';
@@ -100,29 +105,34 @@ export default function App() {
         body: JSON.stringify(body)
       });
 
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(errText || 'Something went wrong');
-      }
+      if (!response.ok) throw new Error(await response.text() || 'Something went wrong');
 
-      // Check if registration or login response
       if (isRegisterMode) {
         setAuthMessage('Registration successful! Please login.');
         setIsRegisterMode(false);
-        setPasswordInput('');
       } else {
         const data = await response.json();
-        setCurrentUser({ email: emailInput, username: data.username || emailInput.split('@')[0] });
+        const userObj = { email: emailInput, username: data.username || emailInput.split('@')[0] };
+        
+        // PERSISTENCE: Save to State and LocalStorage
+        setCurrentUser(userObj);
+        localStorage.setItem('spaceSyncUser', JSON.stringify(userObj));
+
         setIsLoginModalOpen(false);
         setEmailInput('');
         setPasswordInput('');
-        setUsernameInput('');
       }
     } catch (err) {
       setAuthError(err.message);
     } finally {
       setAuthLoading(false);
     }
+  };
+
+  // 3. FIXED: Logout must clear persistence
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('spaceSyncUser');
   };
 
   // User Preferences / Design Specification States
