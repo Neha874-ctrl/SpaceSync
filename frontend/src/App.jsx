@@ -3,7 +3,8 @@ import {
   MessageSquare, Sparkles, Sliders, LayoutGrid,
   Users, Smartphone, Sun, Moon, Send, MoreHorizontal,
   ChevronDown, Info, ExternalLink, Settings, History, Cpu, ChevronRight, ArrowLeft,
-  SlidersHorizontal, Layers, Palette, DollarSign, Home, Compass, Eye
+  SlidersHorizontal, Layers, Palette, DollarSign, Home, Compass, Eye,
+  Upload, ChevronUp, Lightbulb as Bulb
 } from 'lucide-react';
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState('preferences'); 
   // Track selected template for full-view details inside history page
   const [selectedTemplate, setSelectedTemplate] = useState(1);
+  const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(true);
 
   // User Preferences / Design Specification States
   const [layoutAdjustment, setLayoutAdjustment] = useState('flow');
@@ -102,6 +104,14 @@ export default function App() {
 
   const currentTemplateData = historyTemplates.find(t => t.id === selectedTemplate) || historyTemplates[0];
 
+  const iconRegistry = [
+    { id: 'AI', icon: Sparkles, label: 'AI Gen', action: () => setIsAiDrawerOpen(!isAiDrawerOpen) },
+    { id: 'Workspace', icon: LayoutGrid, label: 'Design', view: 'workspace' },
+    { id: 'History', icon: History, label: 'History', view: 'history' },
+    { id: 'Preferences', icon: Sliders, label: 'Prefs', view: 'preferences' },
+    { id: 'Budget', icon: DollarSign, label: 'Budget', view: 'budget' }
+  ];
+
   return (
     <div className={`h-screen w-screen flex flex-col font-sans overflow-hidden transition-colors duration-500 p-3 ${
       darkMode ? 'bg-[#0f0b19]' : 'bg-[#f7b0be]'
@@ -133,7 +143,10 @@ export default function App() {
               <Users size={18} /> Collaborate
             </button>
             
-            <button className="px-6 py-2.5 rounded-full text-sm font-extrabold text-white shadow-md bg-gradient-to-r from-[#e96b8d] to-[#ef88a3] hover:opacity-90 transition-all">
+            <button 
+              onClick={() => setCurrentView('create')}
+              className="px-6 py-2.5 rounded-full text-sm font-extrabold text-white shadow-md bg-gradient-to-r from-[#e96b8d] to-[#ef88a3] hover:opacity-90 transition-all"
+            >
               + Create Design
             </button>
 
@@ -167,13 +180,7 @@ export default function App() {
                     <span className="flex items-center gap-2.5"><Sliders size={16} className="text-[#e96b8d]" /> Preference</span>
                     <ChevronRight size={12} className="opacity-40" />
                   </button>
-                  <button 
-                    onClick={() => { setCurrentView('platform'); setIsSettingsOpen(false); }} 
-                    className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs text-left transition-colors ${darkMode ? 'hover:bg-[#251c36] text-[#dfd5eb]' : 'hover:bg-[#ffeef2] text-[#5c353d]'}`}
-                  >
-                    <span className="flex items-center gap-2.5"><Cpu size={16} className="text-[#e96b8d]" /> Platform Engine</span>
-                    <ChevronRight size={12} className="opacity-40" />
-                  </button>
+
                 </div>
               )}
             </div>
@@ -572,99 +579,97 @@ export default function App() {
             </div>
           </div>
         )}
-        {/* =========================================================================
-    VIEW 4: PLATFORM ENGINE - COMMAND CENTER
-   ========================================================================= */}
-{currentView === 'platform' && (
-  <div className="flex-1 flex flex-col overflow-hidden p-6 animate-in fade-in duration-300">
+
+        {currentView === 'create' && (
+  <div className="flex-1 flex overflow-hidden animate-in fade-in duration-300">
     
-    {/* Header */}
-    <div className="flex items-center justify-between mb-6 shrink-0">
-      <div className="flex items-center gap-3">
+    {/* FAR LEFT: Tooling Sidebar (Fixed Width) */}
+    <div className={`w-20 flex flex-col items-center py-6 gap-6 border-r transition-colors ${
+      darkMode ? 'border-[#312543] bg-[#150f20]/50' : 'border-[#fbcad4] bg-[#fffbfb]/50'
+    }`}>
+      {/* Upload Button */}
+      <button onClick={() => document.getElementById('file-upload').click()} 
+        className={`p-4 rounded-2xl shadow-lg border-2 border-dashed transition-all hover:scale-105 active:scale-95 ${
+          darkMode ? 'bg-[#251c36] border-[#312543] text-[#e45d82]' : 'bg-white border-[#f7c0cc] text-[#e96b8d]'
+        }`}>
+        <Upload size={24} />
+      </button>
+      <input type="file" id="file-upload" className="hidden" />
+
+      {/* Sleek divider line */}
+      <div className={`w-10 h-[1px] ${darkMode ? 'bg-[#312543]' : 'bg-[#fad5de]'}`} />
+
+      {iconRegistry.map((item) => (
         <button 
-          onClick={() => setCurrentView('workspace')} 
-          className={`p-2 rounded-full border transition-all ${darkMode ? 'border-[#3d2e53] bg-[#241a35] text-[#d4c6e3]' : 'border-[#f3bece] bg-white text-[#7d4853]'}`}
+          key={item.id}
+          onClick={() => {
+            // Trigger the specific action if it exists (like AI toggle)
+            if (item.action) item.action();
+            // Trigger the navigation if a view is specified
+            if (item.view) setCurrentView(item.view);
+          }}
+          className={`w-16 flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
+            (item.view && currentView === item.view) || (item.id === 'AI' && isAiDrawerOpen) 
+              ? (darkMode ? 'text-[#e96b8d] bg-[#251c36]' : 'text-[#e96b8d] bg-[#ffeef2]')
+              : 'opacity-60 hover:opacity-100'
+          }`}
         >
-          <ArrowLeft size={16} />
+          <item.icon size={24} />
+          <span className="text-[9px] font-black">{item.label}</span>
         </button>
-        <h2 className="text-2xl font-black tracking-tight">⚙️ Platform Engine</h2>
-      </div>
+      ))}
     </div>
 
-    {/* Main Grid: 28% | 44% | 28% */}
-    <div className="flex-1 flex overflow-hidden gap-6">
+    {/* CENTER: Canvas Workspace */}
+    <div className="flex-1 p-6 relative flex flex-col">
+      
+      {/* The Design Canvas */}
+      <div className={`flex-1 rounded-3xl border-2 border-dashed flex items-center justify-center relative overflow-hidden ${
+        darkMode ? 'border-[#312543]' : 'border-[#fbcad4]'
+      }`}>
+        <p className="opacity-40 font-black text-sm tracking-widest uppercase">Upload a room photo to begin</p>
+      </div>
 
-      {/* LEFT: Computational & Plugins (28%) */}
-      <div className="w-[28%] flex flex-col gap-6 min-w-[330px] shrink-0">
-        {/* 1. Computational Design */}
-        <div className={`rounded-2xl p-5 border flex-1 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
-          <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase mb-4 flex items-center gap-2">
-            <Cpu size={14} /> 1. Computational Design
-          </div>
-          <button className="w-full py-3 bg-[#e96b8d] text-white rounded-xl font-black text-xs hover:opacity-90 transition-all mb-4">Run Optimization</button>
-          <div className="flex items-center justify-between text-xs font-bold p-3 rounded-lg border border-dashed border-[#e96b8d]/30">
-            <span>Physics Simulation</span>
-            <div className={`w-8 h-4 rounded-full relative ${darkMode ? 'bg-[#312543]' : 'bg-gray-200'}`}>
-              <div className="absolute left-0.5 top-0.5 w-3 h-3 bg-[#e96b8d] rounded-full" />
+      {/* BOTTOM: Expandable AI Generator Rectangle */}
+      <div className={`mt-6 p-6 rounded-2xl border transition-all ${
+        darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
+      }`}>
+        {/* Toggle Header */}
+        <button className="w-full flex justify-between font-black items-center" 
+          onClick={() => setIsAiDrawerOpen(!isAiDrawerOpen)}>
+          <span className="flex items-center gap-2 text-[#e96b8d]">
+            <Sparkles size={18}/> AI Room Generator
+          </span>
+          {isAiDrawerOpen ? <ChevronDown size={18}/> : <ChevronUp size={18}/>}
+        </button>
+        
+        {/* Generative UI Content */}
+        {isAiDrawerOpen && (
+          <div className="mt-6 animate-in slide-in-from-bottom-4 duration-300">
+            <input type="text" placeholder="Describe your ideal room aesthetics..." 
+              className={`w-full p-4 rounded-xl border mb-6 font-bold text-sm ${
+                darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
+              }`} 
+            />
+            
+            <div className="grid grid-cols-4 gap-4">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className={`h-32 rounded-xl border-2 flex items-center justify-center cursor-pointer hover:border-[#e96b8d] transition-all ${
+                  darkMode ? 'bg-[#1b1528] border-[#312543]' : 'bg-[#ffeef2] border-[#fbcad4]'
+                }`}>
+                  <span className="text-[10px] font-black opacity-30">VARIANT {i}</span>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-
-        {/* 2. API & Plugins */}
-        <div className={`rounded-2xl p-5 border flex-1 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
-          <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase mb-4 flex items-center gap-2">
-            <Layers size={14} /> 2. API & Plugins
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            {['Asset Sync', 'High Fidelity'].map(opt => (
-              <button key={opt} className={`p-2 rounded-lg text-[10px] font-black border ${darkMode ? 'border-[#312543] bg-[#251c36]' : 'border-[#fbd3dc] bg-white'}`}>{opt}</button>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
-
-      {/* CENTER: Logs & Debugging (44%) */}
-      <div className={`w-[44%] rounded-2xl p-5 border flex flex-col ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
-        <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase mb-5 flex items-center gap-2">
-          <Info size={14} /> 3. Logs & Debugging
-        </div>
-        <div className={`flex-1 p-4 rounded-xl font-mono text-[11px] overflow-y-auto ${darkMode ? 'bg-[#000] text-green-500' : 'bg-gray-900 text-green-400'}`}>
-          <p> Initializing geometry engine...</p>
-          <p> Constraint check: Room_Breadth_Min_Met [PASS]</p>
-          <p> Calculating ergonomic flow paths...</p>
-          <p> Compute Latency: 0.42ms [STABLE]</p>
-        </div>
-      </div>
-
-      {/* RIGHT: Export & Status (28%) */}
-      <div className="w-[28%] flex flex-col gap-6 min-w-[330px] shrink-0">
-        {/* 4. Export & Deployment */}
-        <div className={`rounded-2xl p-5 border flex-1 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
-          <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase mb-4 flex items-center gap-2">
-            <ExternalLink size={14} /> 4. Export & Deployment
-          </div>
-          <div className="space-y-2">
-            <button className="w-full py-2 rounded-lg text-xs font-black border border-[#e96b8d] text-[#e96b8d] hover:bg-[#e96b8d] hover:text-white transition-all">WebXR Export</button>
-            <button className="w-full py-2 rounded-lg text-xs font-black border border-[#e96b8d] text-[#e96b8d] hover:bg-[#e96b8d] hover:text-white transition-all">Collaborator Sync</button>
-          </div>
-        </div>
-        
-        {/* Summary Checklist */}
-        <div className={`rounded-2xl p-5 border ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
-          <div className="text-[10px] font-black uppercase opacity-50 mb-3">Quick Checklist</div>
-          <div className="space-y-2">
-            {['Verify Constraints', 'Initiate Solve', 'Spatial Focus'].map(item => (
-              <div key={item} className="flex items-center gap-2 text-[11px] font-bold opacity-70">
-                <div className="w-3 h-3 rounded-sm border border-current"></div> {item}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 )}
+
+
+
 
       </div>
     </div>
