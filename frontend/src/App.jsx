@@ -7,16 +7,65 @@ import {
   Upload, ChevronUp, Lightbulb as Bulb
 } from 'lucide-react';
 
+function CollaboratePage({ darkMode }) {
+  const designs = [
+    { title: 'Living Room Concept', active: true },
+    { title: 'Kitchen Remodel', active: true },
+    { title: 'Master Suite', active: true },
+  ];
+
+  return (
+    <div className="h-full p-8 animate-in fade-in duration-500 overflow-y-auto">
+      <div className="flex justify-between items-center mb-10">
+        <div>
+          <h1 className="text-3xl font-black">Collaboration Hub</h1>
+          <p className="opacity-60 text-sm">Manage team access and project feedback.</p>
+        </div>
+        <button className="bg-[#e96b8d] text-white px-6 py-3 rounded-2xl font-bold hover:opacity-90 transition-all shadow-lg">
+          + Invite Team Member
+        </button>
+      </div>
+
+      <div className="grid grid-cols-4 gap-8">
+        <div className="col-span-3 grid grid-cols-3 gap-6">
+          {designs.map((d, i) => (
+            <div key={i} className={`p-4 rounded-3xl border transition-colors ${darkMode ? 'bg-[#150f20]/50 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+              <div className={`h-32 rounded-2xl mb-4 ${darkMode ? 'bg-[#312543]' : 'bg-[#fde2e8]'}`}></div>
+              <p className="font-bold mb-2">{d.title}</p>
+              <span className={`text-[10px] font-bold text-[#e96b8d] px-3 py-1 rounded-full ${darkMode ? 'bg-[#251c36]' : 'bg-[#ffeef2]'}`}>ACTIVE</span>
+            </div>
+          ))}
+        </div>
+        <div className={`p-6 rounded-3xl border transition-colors ${darkMode ? 'bg-[#150f20]/50 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+          <h2 className="font-bold mb-6">Team</h2>
+          <div className="space-y-4">
+            {[{n: 'Sarah (Lead)', r: 'Owner'}, {n: 'Mike (Client)', r: 'Viewer'}].map((m, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#e96b8d] flex items-center justify-center font-bold text-sm text-white">
+                  {m.n[0]}
+                </div>
+                <div>
+                  <p className="font-bold text-sm">{m.n}</p>
+                  <p className="text-xs opacity-50">{m.r}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   // Toggle for the independent floating settings dropdown menu
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  
+
   // Track current structural viewport layout view mode without destroying layout code
   // Modes: 'workspace' | 'history' | 'preferences'
-  const [currentView, setCurrentView] = useState('workspace'); 
+  const [currentView, setCurrentView] = useState('workspace');
   // Track selected template for full-view details inside history page
   const [selectedTemplate, setSelectedTemplate] = useState(1);
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(true);
@@ -39,7 +88,7 @@ export default function App() {
     setAuthLoading(true);
 
     const url = isRegisterMode ? 'http://localhost:3001/api/register' : 'http://localhost:3001/api/login';
-    const body = isRegisterMode 
+    const body = isRegisterMode
       ? { email: emailInput, username: usernameInput, password: passwordInput }
       : { email: emailInput, password: passwordInput };
 
@@ -78,12 +127,12 @@ export default function App() {
   // User Preferences / Design Specification States
   const [layoutAdjustment, setLayoutAdjustment] = useState('flow');
   const [designStyle, setDesignStyle] = useState('japandi');
-  
+
   // Three-dimensional spatial limits
   const [roomBreadth, setRoomBreadth] = useState('14');
   const [roomWidth, setRoomWidth] = useState('18');
   const [roomHeight, setRoomHeight] = useState('9');
-  
+
   const [peopleCount, setPeopleCount] = useState(2);
   const [roomCount, setRoomCount] = useState(1);
   const [budgetMax, setBudgetMax] = useState(2500);
@@ -169,22 +218,19 @@ export default function App() {
   ];
 
   return (
-    <div className={`h-screen w-screen flex flex-col font-sans overflow-hidden transition-colors duration-500 p-3 ${
-      darkMode ? 'bg-[#0f0b19]' : 'bg-[#f7b0be]'
-    }`}>
-
-      <div className={`flex-1 w-full flex flex-col overflow-hidden rounded-2xl border ${
-        darkMode ? 'bg-[#1b1528] border-[#312543] text-[#e2daeb]' : 'bg-[#ffeef2] border-[#fbcad4] text-[#4d2d34]'
+    <div className={`h-screen w-screen flex flex-col font-sans overflow-hidden transition-colors duration-500 p-3 ${darkMode ? 'bg-[#0f0b19]' : 'bg-[#f7b0be]'
       }`}>
+
+      <div className={`flex-1 w-full flex flex-col overflow-hidden rounded-2xl border ${darkMode ? 'bg-[#1b1528] border-[#312543] text-[#e2daeb]' : 'bg-[#ffeef2] border-[#fbcad4] text-[#4d2d34]'
+        }`}>
 
         {/* =========================================================================
             HEADER NAVIGATION BAR
            ========================================================================= */}
-        <header className={`px-8 py-4 flex items-center justify-between border-b transition-colors duration-500 shrink-0 ${
-          darkMode ? 'bg-[#1e172c]/90 border-[#312543]' : 'bg-[#fff5f7]/95 border-[#fbcad4]'
-        }`}>
-          <div 
-            className="flex items-center gap-4 cursor-pointer" 
+        <header className={`px-8 py-4 flex items-center justify-between border-b transition-colors duration-500 shrink-0 ${darkMode ? 'bg-[#1e172c]/90 border-[#312543]' : 'bg-[#fff5f7]/95 border-[#fbcad4]'
+          }`}>
+          <div
+            className="flex items-center gap-4 cursor-pointer"
             onClick={() => {
               if (!currentUser) {
                 setIsLoginModalOpen(true);
@@ -193,29 +239,29 @@ export default function App() {
               }
             }}
           >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-base tracking-tighter shadow-md ${
-              darkMode ? 'bg-[#e45d82] text-white' : 'bg-[#e96b8d] text-white'
-            }`}>
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-base tracking-tighter shadow-md ${darkMode ? 'bg-[#e45d82] text-white' : 'bg-[#e96b8d] text-white'
+              }`}>
               SS
             </div>
             <span className="font-extrabold text-2xl tracking-tight">SpaceSync</span>
           </div>
 
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => {
                 if (!currentUser) {
                   setIsLoginModalOpen(true);
+                } else {
+                  setCurrentView('collaborate');
                 }
               }}
-              className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full border text-sm font-bold tracking-wide transition-all shadow-sm ${
-                darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#d4c6e3]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#7d4853]'
-              }`}
+              className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full border text-sm font-bold tracking-wide transition-all shadow-sm ${darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#d4c6e3]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#7d4853]'
+                }`}
             >
               <Users size={18} /> Collaborate
             </button>
-            
-            <button 
+
+            <button
               onClick={() => {
                 if (!currentUser) {
                   setIsLoginModalOpen(true);
@@ -234,21 +280,19 @@ export default function App() {
                 <span className="text-xs font-black tracking-wide opacity-80">
                   👋 {currentUser.username}
                 </span>
-                <button 
+                <button
                   onClick={() => setCurrentUser(null)}
-                  className={`px-5 py-2.5 rounded-full border text-sm font-bold transition-all shadow-sm ${
-                    darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#ff8bb0]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#e96b8d]'
-                  }`}
+                  className={`px-5 py-2.5 rounded-full border text-sm font-bold transition-all shadow-sm ${darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#ff8bb0]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#e96b8d]'
+                    }`}
                 >
                   Logout
                 </button>
               </div>
             ) : (
-              <button 
+              <button
                 onClick={() => setIsLoginModalOpen(true)}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-full border text-sm font-bold tracking-wide transition-all shadow-sm ${
-                  darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#d4c6e3]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#7d4853]'
-                }`}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-full border text-sm font-bold tracking-wide transition-all shadow-sm ${darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#d4c6e3]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#7d4853]'
+                  }`}
               >
                 Login
               </button>
@@ -256,21 +300,19 @@ export default function App() {
 
             {/* FLOATING SETTINGS MENU DROPDOWN */}
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className={`p-2.5 rounded-full border shadow-sm transition-all flex items-center justify-center ${
-                  darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#e45d82]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#e96b8d]'
-                }`}
+                className={`p-2.5 rounded-full border shadow-sm transition-all flex items-center justify-center ${darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#e45d82]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#e96b8d]'
+                  }`}
               >
                 <Settings size={18} className={isSettingsOpen ? 'rotate-45 transition-transform' : 'transition-transform'} />
               </button>
 
               {/* Absolute Dropdown Wrapper */}
               {isSettingsOpen && (
-                <div className={`absolute right-0 mt-3 w-60 rounded-2xl border shadow-xl z-50 p-1.5 transition-all animate-in fade-in zoom-in-95 duration-150 ${
-                  darkMode ? 'bg-[#1e172c] border-[#3d2e53]' : 'bg-white border-[#f7b0be]'
-                }`}>
-                  <button 
+                <div className={`absolute right-0 mt-3 w-60 rounded-2xl border shadow-xl z-50 p-1.5 transition-all animate-in fade-in zoom-in-95 duration-150 ${darkMode ? 'bg-[#1e172c] border-[#3d2e53]' : 'bg-white border-[#f7b0be]'
+                  }`}>
+                  <button
                     onClick={() => {
                       if (!currentUser) {
                         setIsLoginModalOpen(true);
@@ -278,13 +320,13 @@ export default function App() {
                         setCurrentView('history');
                         setIsSettingsOpen(false);
                       }
-                    }} 
+                    }}
                     className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs text-left transition-colors ${darkMode ? 'hover:bg-[#251c36] text-[#dfd5eb]' : 'hover:bg-[#ffeef2] text-[#5c353d]'}`}
                   >
                     <span className="flex items-center gap-2.5"><History size={16} className="text-[#e96b8d]" /> History</span>
                     <ChevronRight size={12} className="opacity-40" />
                   </button>
-                  <button 
+                  <button
                     onClick={() => {
                       if (!currentUser) {
                         setIsLoginModalOpen(true);
@@ -292,7 +334,7 @@ export default function App() {
                         setCurrentView('preferences');
                         setIsSettingsOpen(false);
                       }
-                    }} 
+                    }}
                     className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs text-left transition-colors ${darkMode ? 'hover:bg-[#251c36] text-[#dfd5eb]' : 'hover:bg-[#ffeef2] text-[#5c353d]'}`}
                   >
                     <span className="flex items-center gap-2.5"><Sliders size={16} className="text-[#e96b8d]" /> Preference</span>
@@ -304,9 +346,8 @@ export default function App() {
             </div>
 
             {/* Functional Theme Toggle Switch */}
-            <div className={`flex items-center rounded-full p-1 border gap-1 transition-colors ${
-              darkMode ? 'bg-[#251d34] border-[#3d2e53]' : 'bg-[#fde2e8] border-[#f7b0be]'
-            }`}>
+            <div className={`flex items-center rounded-full p-1 border gap-1 transition-colors ${darkMode ? 'bg-[#251d34] border-[#3d2e53]' : 'bg-[#fde2e8] border-[#f7b0be]'
+              }`}>
               <button onClick={() => setDarkMode(false)} className={`p-2 rounded-full transition-all ${!darkMode ? 'bg-white text-[#e96b8d] shadow-sm' : 'text-[#7e6b91]'}`}><Sun size={16} /></button>
               <button onClick={() => setDarkMode(true)} className={`p-2 rounded-full transition-all ${darkMode ? 'bg-[#4b336d] text-[#ffcf76] shadow-sm' : 'text-[#a68d94]'}`}><Moon size={16} /></button>
             </div>
@@ -316,7 +357,7 @@ export default function App() {
         {/* =========================================================================
             CONDITIONAL ROUTING MODULE VIA STATE CONTROLS
            ========================================================================= */}
-        
+
         {currentView === 'workspace' && (
           /* VIEW 1: DEFAULT CONFIGURATION WORKSPACE INTERACTIVE CANVAS */
           <div className="flex-1 flex overflow-hidden p-6 gap-6">
@@ -341,18 +382,18 @@ export default function App() {
                   </div>
                 </div>
                 <div className="mt-4 relative">
-                  <input 
-                    type="text" 
-                    placeholder="Type your reply here..." 
+                  <input
+                    type="text"
+                    placeholder="Type your reply here..."
                     onFocus={(e) => {
                       if (!currentUser) {
                         e.target.blur();
                         setIsLoginModalOpen(true);
                       }
                     }}
-                    className={`w-full pl-4 pr-12 py-3.5 rounded-xl border text-sm font-semibold focus:outline-none ${darkMode ? 'bg-[#251c36] border-[#3a2d50] text-white' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'}`} 
+                    className={`w-full pl-4 pr-12 py-3.5 rounded-xl border text-sm font-semibold focus:outline-none ${darkMode ? 'bg-[#251c36] border-[#3a2d50] text-white' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'}`}
                   />
-                  <button 
+                  <button
                     onClick={() => {
                       if (!currentUser) {
                         setIsLoginModalOpen(true);
@@ -469,15 +510,14 @@ export default function App() {
            ========================================================================= */}
         {currentView === 'preferences' && (
           <div className="flex-1 flex flex-col overflow-hidden p-6 animate-in fade-in duration-300">
-            
+
             {/* Nav Header Row */}
             <div className="flex items-center justify-between mb-6 shrink-0">
               <div className="flex items-center gap-3">
-                <button 
-                  onClick={() => setCurrentView('workspace')} 
-                  className={`p-2 rounded-full border transition-all ${
-                    darkMode ? 'border-[#3d2e53] bg-[#241a35] text-[#d4c6e3] hover:bg-[#2d2142]' : 'border-[#f3bece] bg-white text-[#7d4853] hover:bg-[#fff9fa]'
-                  }`}
+                <button
+                  onClick={() => setCurrentView('workspace')}
+                  className={`p-2 rounded-full border transition-all ${darkMode ? 'border-[#3d2e53] bg-[#241a35] text-[#d4c6e3] hover:bg-[#2d2142]' : 'border-[#f3bece] bg-white text-[#7d4853] hover:bg-[#fff9fa]'
+                    }`}
                 >
                   <ArrowLeft size={16} />
                 </button>
@@ -489,9 +529,8 @@ export default function App() {
             <div className="flex-1 flex overflow-hidden gap-6">
 
               {/* LEFT BLOCK (28% Width Split): Structural Directives */}
-              <div className={`w-[28%] rounded-2xl p-5 border flex flex-col min-w-[330px] shrink-0 transition-colors duration-500 ${
-                darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
-              }`}>
+              <div className={`w-[28%] rounded-2xl p-5 border flex flex-col min-w-[330px] shrink-0 transition-colors duration-500 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
+                }`}>
                 <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase tracking-wider mb-5 flex items-center gap-2">
                   <SlidersHorizontal size={14} /> Adjustments & Goals
                 </div>
@@ -508,13 +547,12 @@ export default function App() {
                         <button
                           key={item.id}
                           onClick={() => setLayoutAdjustment(item.id)}
-                          className={`w-full py-3 px-4 rounded-xl border text-left text-xs font-bold transition-all ${
-                            layoutAdjustment === item.id 
-                              ? 'bg-[#e96b8d] border-transparent text-white shadow-sm' 
-                              : darkMode 
-                                ? 'bg-[#251c36] border-[#3d2e53] text-[#dfd5eb] hover:bg-[#2f2445]' 
+                          className={`w-full py-3 px-4 rounded-xl border text-left text-xs font-bold transition-all ${layoutAdjustment === item.id
+                              ? 'bg-[#e96b8d] border-transparent text-white shadow-sm'
+                              : darkMode
+                                ? 'bg-[#251c36] border-[#3d2e53] text-[#dfd5eb] hover:bg-[#2f2445]'
                                 : 'bg-white border-[#fbd3dc] hover:bg-[#ffeef2]'
-                          }`}
+                            }`}
                         >
                           {item.label}
                         </button>
@@ -524,12 +562,11 @@ export default function App() {
 
                   <div className="pt-2">
                     <label className="text-xs font-black block mb-2 opacity-80">Select Design Type Ruleset:</label>
-                    <select 
-                      value={designStyle} 
-                      onChange={(e) => setDesignStyle(e.target.value)} 
-                      className={`w-full px-3 py-3 rounded-xl border text-xs font-bold focus:outline-none transition-colors ${
-                        darkMode ? 'bg-[#251c36] border-[#3d2e53] text-[#dfd5eb]' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
-                      }`}
+                    <select
+                      value={designStyle}
+                      onChange={(e) => setDesignStyle(e.target.value)}
+                      className={`w-full px-3 py-3 rounded-xl border text-xs font-bold focus:outline-none transition-colors ${darkMode ? 'bg-[#251c36] border-[#3d2e53] text-[#dfd5eb]' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
+                        }`}
                     >
                       <option value="japandi" className={darkMode ? 'bg-[#1e172c]' : ''}>Japandi Minimalist</option>
                       <option value="industrial" className={darkMode ? 'bg-[#1e172c]' : ''}>Modern Industrial Loft</option>
@@ -540,53 +577,49 @@ export default function App() {
               </div>
 
               {/* CENTER BLOCK (44% Width Split): Main Configuration Fields */}
-              <div className={`w-[44%] rounded-2xl p-5 border flex flex-col shrink-0 transition-colors duration-500 ${
-                darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
-              }`}>
+              <div className={`w-[44%] rounded-2xl p-5 border flex flex-col shrink-0 transition-colors duration-500 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
+                }`}>
                 <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase tracking-wider mb-5 flex items-center gap-2">
                   <Layers size={14} /> Core Spatial Bounds
                 </div>
 
                 <div className="space-y-5 flex-1 overflow-y-auto pr-1">
-                  
+
                   {/* Room Dimensions Inputs Group (Breadth x Width x Height Layout) */}
                   <div className={`p-4 rounded-xl border transition-colors ${darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc]'}`}>
                     <label className="text-xs font-black block mb-3 opacity-90">Room Dimensions (Feet)</label>
                     <div className="grid grid-cols-3 gap-3">
                       <div>
                         <span className="text-[10px] font-black uppercase tracking-wider opacity-50 block mb-1.5">Breadth</span>
-                        <input 
-                          type="text" 
-                          placeholder="e.g. 14" 
-                          value={roomBreadth} 
-                          onChange={(e) => setRoomBreadth(e.target.value)} 
-                          className={`w-full p-2.5 border rounded-lg text-xs font-bold focus:outline-none transition-colors ${
-                            darkMode ? 'bg-[#251c36] border-[#3d2e53] text-white placeholder-gray-600' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
-                          }`} 
+                        <input
+                          type="text"
+                          placeholder="e.g. 14"
+                          value={roomBreadth}
+                          onChange={(e) => setRoomBreadth(e.target.value)}
+                          className={`w-full p-2.5 border rounded-lg text-xs font-bold focus:outline-none transition-colors ${darkMode ? 'bg-[#251c36] border-[#3d2e53] text-white placeholder-gray-600' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
+                            }`}
                         />
                       </div>
                       <div>
                         <span className="text-[10px] font-black uppercase tracking-wider opacity-50 block mb-1.5">Width</span>
-                        <input 
-                          type="text" 
-                          placeholder="e.g. 18" 
-                          value={roomWidth} 
-                          onChange={(e) => setRoomWidth(e.target.value)} 
-                          className={`w-full p-2.5 border rounded-lg text-xs font-bold focus:outline-none transition-colors ${
-                            darkMode ? 'bg-[#251c36] border-[#3d2e53] text-white placeholder-gray-600' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
-                          }`} 
+                        <input
+                          type="text"
+                          placeholder="e.g. 18"
+                          value={roomWidth}
+                          onChange={(e) => setRoomWidth(e.target.value)}
+                          className={`w-full p-2.5 border rounded-lg text-xs font-bold focus:outline-none transition-colors ${darkMode ? 'bg-[#251c36] border-[#3d2e53] text-white placeholder-gray-600' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
+                            }`}
                         />
                       </div>
                       <div>
                         <span className="text-[10px] font-black uppercase tracking-wider opacity-50 block mb-1.5">Height</span>
-                        <input 
-                          type="text" 
-                          placeholder="e.g. 9" 
-                          value={roomHeight} 
-                          onChange={(e) => setRoomHeight(e.target.value)} 
-                          className={`w-full p-2.5 border rounded-lg text-xs font-bold focus:outline-none transition-colors ${
-                            darkMode ? 'bg-[#251c36] border-[#3d2e53] text-white placeholder-gray-600' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
-                          }`} 
+                        <input
+                          type="text"
+                          placeholder="e.g. 9"
+                          value={roomHeight}
+                          onChange={(e) => setRoomHeight(e.target.value)}
+                          className={`w-full p-2.5 border rounded-lg text-xs font-bold focus:outline-none transition-colors ${darkMode ? 'bg-[#251c36] border-[#3d2e53] text-white placeholder-gray-600' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
+                            }`}
                         />
                       </div>
                     </div>
@@ -596,17 +629,16 @@ export default function App() {
                   <div className={`p-4 rounded-xl border transition-colors ${darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc]'}`}>
                     <label className="text-xs font-black block mb-1 opacity-90 flex items-center gap-1.5"><Palette size={14} /> Color Palette Shades</label>
                     <p className="text-[11px] opacity-60 font-semibold mb-3">Select your targeted accent profile using your cursor:</p>
-                    
+
                     <div className="space-y-2.5">
                       {colorPalettes.map((p) => (
-                        <div 
+                        <div
                           key={p.id}
                           onClick={() => setSelectedPalette(p.id)}
-                          className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                            selectedPalette === p.id 
-                              ? darkMode ? 'border-[#e45d82] bg-[#2d1b33]' : 'border-[#e96b8d] bg-[#ffeef2]' 
+                          className={`p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${selectedPalette === p.id
+                              ? darkMode ? 'border-[#e45d82] bg-[#2d1b33]' : 'border-[#e96b8d] bg-[#ffeef2]'
                               : darkMode ? 'border-[#3d2e53] bg-[#251c36]/40 hover:bg-[#2b203d]' : 'border-[#f2f2f2] hover:bg-gray-50'
-                          }`}
+                            }`}
                         >
                           <span className="text-xs font-bold opacity-80">{p.name}</span>
                           <div className={`flex gap-1.5 p-1 border rounded-lg ${darkMode ? 'bg-[#150f20] border-[#3d2e53]' : 'bg-white'}`}>
@@ -622,14 +654,14 @@ export default function App() {
                   {/* Budget Slider Row */}
                   <div className={`p-4 rounded-xl border transition-colors ${darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc]'}`}>
                     <label className="text-xs font-black block mb-2 opacity-90 flex items-center gap-1"><DollarSign size={14} /> Project Budget Constraints</label>
-                    <input 
-                      type="range" 
-                      min="500" 
-                      max="10000" 
+                    <input
+                      type="range"
+                      min="500"
+                      max="10000"
                       step="500"
-                      value={budgetMax} 
+                      value={budgetMax}
                       onChange={(e) => setBudgetMax(Number(e.target.value))}
-                      className="w-full accent-[#e96b8d] h-[6px] bg-gray-200 rounded-lg cursor-pointer appearance-none dark:bg-gray-700" 
+                      className="w-full accent-[#e96b8d] h-[6px] bg-gray-200 rounded-lg cursor-pointer appearance-none dark:bg-gray-700"
                     />
                     <div className="flex justify-between text-xs font-black text-[#e96b8d] mt-2">
                       <span className="opacity-40 text-gray-500">$500 Min</span>
@@ -663,9 +695,8 @@ export default function App() {
               </div>
 
               {/* RIGHT BLOCK (28% Width Split): Additional Environmental Context */}
-              <div className={`w-[28%] rounded-2xl p-5 border flex flex-col min-w-[330px] shrink-0 transition-colors duration-500 ${
-                darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
-              }`}>
+              <div className={`w-[28%] rounded-2xl p-5 border flex flex-col min-w-[330px] shrink-0 transition-colors duration-500 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
+                }`}>
                 <div className="pb-2.5 border-b border-dashed border-current opacity-50 text-xs font-black uppercase tracking-wider mb-5 flex items-center gap-2">
                   <Home size={14} /> Environmental Factors
                 </div>
@@ -673,12 +704,11 @@ export default function App() {
                 <div className="space-y-5 flex-1 overflow-y-auto pr-1">
                   <div>
                     <label className="text-xs font-black block mb-2 opacity-80 flex items-center gap-1"><Compass size={13} /> Window Facing Direction</label>
-                    <select 
-                      value={windowFacing} 
-                      onChange={(e) => setWindowFacing(e.target.value)} 
-                      className={`w-full p-2.5 border rounded-xl text-xs font-bold focus:outline-none transition-colors ${
-                        darkMode ? 'bg-[#251c36] border-[#3d2e53] text-[#dfd5eb]' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
-                      }`}
+                    <select
+                      value={windowFacing}
+                      onChange={(e) => setWindowFacing(e.target.value)}
+                      className={`w-full p-2.5 border rounded-xl text-xs font-bold focus:outline-none transition-colors ${darkMode ? 'bg-[#251c36] border-[#3d2e53] text-[#dfd5eb]' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
+                        }`}
                     >
                       <option value="south" className={darkMode ? 'bg-[#1e172c]' : ''}>South Facing (High Sunlight)</option>
                       <option value="north" className={darkMode ? 'bg-[#1e172c]' : ''}>North Facing (Cool Indirect Light)</option>
@@ -689,12 +719,11 @@ export default function App() {
 
                   <div>
                     <label className="text-xs font-black block mb-2 opacity-80 flex items-center gap-1"><Eye size={13} /> Base Flooring Texture</label>
-                    <select 
-                      value={flooringType} 
-                      onChange={(e) => setFlooringType(e.target.value)} 
-                      className={`w-full p-2.5 border rounded-xl text-xs font-bold focus:outline-none transition-colors ${
-                        darkMode ? 'bg-[#251c36] border-[#3d2e53] text-[#dfd5eb]' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
-                      }`}
+                    <select
+                      value={flooringType}
+                      onChange={(e) => setFlooringType(e.target.value)}
+                      className={`w-full p-2.5 border rounded-xl text-xs font-bold focus:outline-none transition-colors ${darkMode ? 'bg-[#251c36] border-[#3d2e53] text-[#dfd5eb]' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'
+                        }`}
                     >
                       <option value="hardwood" className={darkMode ? 'bg-[#1e172c]' : ''}>Natural Oak Hardwood</option>
                       <option value="concrete" className={darkMode ? 'bg-[#1e172c]' : ''}>Polished Industrial Concrete</option>
@@ -718,117 +747,108 @@ export default function App() {
         )}
 
         {currentView === 'create' && (
-  <div className="flex-1 flex overflow-hidden animate-in fade-in duration-300">
-    
-    {/* FAR LEFT: Tooling Sidebar (Fixed Width) */}
-    <div className={`w-20 flex flex-col items-center py-6 gap-6 border-r transition-colors ${
-      darkMode ? 'border-[#312543] bg-[#150f20]/50' : 'border-[#fbcad4] bg-[#fffbfb]/50'
-    }`}>
-      {/* Upload Button */}
-      <button onClick={() => document.getElementById('file-upload').click()} 
-        className={`p-4 rounded-2xl shadow-lg border-2 border-dashed transition-all hover:scale-105 active:scale-95 ${
-          darkMode ? 'bg-[#251c36] border-[#312543] text-[#e45d82]' : 'bg-white border-[#f7c0cc] text-[#e96b8d]'
-        }`}>
-        <Upload size={24} />
-      </button>
-      <input type="file" id="file-upload" className="hidden" />
+          <div className="flex-1 flex overflow-hidden animate-in fade-in duration-300">
 
-      {/* Sleek divider line */}
-      <div className={`w-10 h-[1px] ${darkMode ? 'bg-[#312543]' : 'bg-[#fad5de]'}`} />
+            {/* FAR LEFT: Tooling Sidebar (Fixed Width) */}
+            <div className={`w-20 flex flex-col items-center py-6 gap-6 border-r transition-colors ${darkMode ? 'border-[#312543] bg-[#150f20]/50' : 'border-[#fbcad4] bg-[#fffbfb]/50'
+              }`}>
+              {/* Upload Button */}
+              <button onClick={() => document.getElementById('file-upload').click()}
+                className={`p-4 rounded-2xl shadow-lg border-2 border-dashed transition-all hover:scale-105 active:scale-95 ${darkMode ? 'bg-[#251c36] border-[#312543] text-[#e45d82]' : 'bg-white border-[#f7c0cc] text-[#e96b8d]'
+                  }`}>
+                <Upload size={24} />
+              </button>
+              <input type="file" id="file-upload" className="hidden" />
 
-      {iconRegistry.map((item) => (
-        <button 
-          key={item.id}
-          onClick={() => {
-            if (!currentUser) {
-              setIsLoginModalOpen(true);
-              return;
-            }
-            // Trigger the specific action if it exists (like AI toggle)
-            if (item.action) item.action();
-            // Trigger the navigation if a view is specified
-            if (item.view) setCurrentView(item.view);
-          }}
-          className={`w-16 flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${
-            (item.view && currentView === item.view) || (item.id === 'AI' && isAiDrawerOpen) 
-              ? (darkMode ? 'text-[#e96b8d] bg-[#251c36]' : 'text-[#e96b8d] bg-[#ffeef2]')
-              : 'opacity-60 hover:opacity-100'
-          }`}
-        >
-          <item.icon size={24} />
-          <span className="text-[9px] font-black">{item.label}</span>
-        </button>
-      ))}
-    </div>
+              {/* Sleek divider line */}
+              <div className={`w-10 h-[1px] ${darkMode ? 'bg-[#312543]' : 'bg-[#fad5de]'}`} />
 
-    {/* CENTER: Canvas Workspace */}
-    <div className="flex-1 p-6 relative flex flex-col">
-      
-      {/* The Design Canvas */}
-      <div className={`flex-1 rounded-3xl border-2 border-dashed flex items-center justify-center relative overflow-hidden ${
-        darkMode ? 'border-[#312543]' : 'border-[#fbcad4]'
-      }`}>
-        <p className="opacity-40 font-black text-sm tracking-widest uppercase">Upload a room photo to begin</p>
-      </div>
-
-      {/* BOTTOM: Expandable AI Generator Rectangle */}
-      <div className={`mt-6 p-6 rounded-2xl border transition-all ${
-        darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
-      }`}>
-        {/* Toggle Header */}
-        <button className="w-full flex justify-between font-black items-center" 
-          onClick={() => setIsAiDrawerOpen(!isAiDrawerOpen)}>
-          <span className="flex items-center gap-2 text-[#e96b8d]">
-            <Sparkles size={18}/> AI Room Generator
-          </span>
-          {isAiDrawerOpen ? <ChevronDown size={18}/> : <ChevronUp size={18}/>}
-        </button>
-        
-        {/* Generative UI Content */}
-        {isAiDrawerOpen && (
-          <div className="mt-6 animate-in slide-in-from-bottom-4 duration-300">
-            <input 
-              type="text" 
-              placeholder="Describe your ideal room aesthetics..." 
-              onFocus={(e) => {
-                if (!currentUser) {
-                  e.target.blur();
-                  setIsLoginModalOpen(true);
-                }
-              }}
-              className={`w-full p-4 rounded-xl border mb-6 font-bold text-sm ${
-                darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
-              }`} 
-            />
-            
-            <div className="grid grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className={`h-32 rounded-xl border-2 flex items-center justify-center cursor-pointer hover:border-[#e96b8d] transition-all ${
-                  darkMode ? 'bg-[#1b1528] border-[#312543]' : 'bg-[#ffeef2] border-[#fbcad4]'
-                }`}>
-                  <span className="text-[10px] font-black opacity-30">VARIANT {i}</span>
-                </div>
+              {iconRegistry.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    if (!currentUser) {
+                      setIsLoginModalOpen(true);
+                      return;
+                    }
+                    // Trigger the specific action if it exists (like AI toggle)
+                    if (item.action) item.action();
+                    // Trigger the navigation if a view is specified
+                    if (item.view) setCurrentView(item.view);
+                  }}
+                  className={`w-16 flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${(item.view && currentView === item.view) || (item.id === 'AI' && isAiDrawerOpen)
+                      ? (darkMode ? 'text-[#e96b8d] bg-[#251c36]' : 'text-[#e96b8d] bg-[#ffeef2]')
+                      : 'opacity-60 hover:opacity-100'
+                    }`}
+                >
+                  <item.icon size={24} />
+                  <span className="text-[9px] font-black">{item.label}</span>
+                </button>
               ))}
+            </div>
+
+            {/* CENTER: Canvas Workspace */}
+            <div className="flex-1 p-6 relative flex flex-col">
+
+              {/* The Design Canvas */}
+              <div className={`flex-1 rounded-3xl border-2 border-dashed flex items-center justify-center relative overflow-hidden ${darkMode ? 'border-[#312543]' : 'border-[#fbcad4]'
+                }`}>
+                <p className="opacity-40 font-black text-sm tracking-widest uppercase">Upload a room photo to begin</p>
+              </div>
+
+              {/* BOTTOM: Expandable AI Generator Rectangle */}
+              <div className={`mt-6 p-6 rounded-2xl border transition-all ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
+                }`}>
+                {/* Toggle Header */}
+                <button className="w-full flex justify-between font-black items-center"
+                  onClick={() => setIsAiDrawerOpen(!isAiDrawerOpen)}>
+                  <span className="flex items-center gap-2 text-[#e96b8d]">
+                    <Sparkles size={18} /> AI Room Generator
+                  </span>
+                  {isAiDrawerOpen ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+                </button>
+
+                {/* Generative UI Content */}
+                {isAiDrawerOpen && (
+                  <div className="mt-6 animate-in slide-in-from-bottom-4 duration-300">
+                    <input
+                      type="text"
+                      placeholder="Describe your ideal room aesthetics..."
+                      onFocus={(e) => {
+                        if (!currentUser) {
+                          e.target.blur();
+                          setIsLoginModalOpen(true);
+                        }
+                      }}
+                      className={`w-full p-4 rounded-xl border mb-6 font-bold text-sm ${darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
+                        }`}
+                    />
+
+                    <div className="grid grid-cols-4 gap-4">
+                      {[1, 2, 3, 4].map(i => (
+                        <div key={i} className={`h-32 rounded-xl border-2 flex items-center justify-center cursor-pointer hover:border-[#e96b8d] transition-all ${darkMode ? 'bg-[#1b1528] border-[#312543]' : 'bg-[#ffeef2] border-[#fbcad4]'
+                          }`}>
+                          <span className="text-[10px] font-black opacity-30">VARIANT {i}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
-      </div>
-    </div>
-  </div>
-)}
 
-
-
+        {currentView === 'collaborate' && <CollaboratePage darkMode={darkMode} />}
 
         {/* LOGIN MODAL */}
         {isLoginModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className={`w-[400px] p-8 rounded-3xl border shadow-2xl relative ${
-              darkMode ? 'bg-[#1b1528] border-[#312543] text-white' : 'bg-white border-[#f7b0be] text-[#4d2d34]'
-            }`}>
-              
+            <div className={`w-[400px] p-8 rounded-3xl border shadow-2xl relative ${darkMode ? 'bg-[#1b1528] border-[#312543] text-white' : 'bg-white border-[#f7b0be] text-[#4d2d34]'
+              }`}>
+
               {/* Close Button */}
-              <button 
+              <button
                 onClick={() => {
                   setIsLoginModalOpen(false);
                   setAuthError('');
@@ -847,44 +867,41 @@ export default function App() {
                 {isRegisterMode && (
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-wider opacity-60 block mb-1.5">Username</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       required
                       value={usernameInput}
                       onChange={(e) => setUsernameInput(e.target.value)}
                       placeholder="Your name"
-                      className={`w-full p-3 border rounded-xl font-bold text-sm focus:outline-none transition-colors ${
-                        darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
-                      }`}
+                      className={`w-full p-3 border rounded-xl font-bold text-sm focus:outline-none transition-colors ${darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
+                        }`}
                     />
                   </div>
                 )}
 
                 <div>
                   <label className="text-[10px] font-black uppercase tracking-wider opacity-60 block mb-1.5">Email Address</label>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     required
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
                     placeholder="name@example.com"
-                    className={`w-full p-3 border rounded-xl font-bold text-sm focus:outline-none transition-colors ${
-                      darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
-                    }`}
+                    className={`w-full p-3 border rounded-xl font-bold text-sm focus:outline-none transition-colors ${darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
+                      }`}
                   />
                 </div>
 
                 <div>
                   <label className="text-[10px] font-black uppercase tracking-wider opacity-60 block mb-1.5">Password</label>
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     required
                     value={passwordInput}
                     onChange={(e) => setPasswordInput(e.target.value)}
                     placeholder="••••••••"
-                    className={`w-full p-3 border rounded-xl font-bold text-sm focus:outline-none transition-colors ${
-                      darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
-                    }`}
+                    className={`w-full p-3 border rounded-xl font-bold text-sm focus:outline-none transition-colors ${darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
+                      }`}
                   />
                 </div>
 
@@ -895,8 +912,8 @@ export default function App() {
                   <p className="text-green-500 font-bold text-xs mt-2">{authMessage}</p>
                 )}
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={authLoading}
                   className="w-full py-3.5 bg-gradient-to-r from-[#e96b8d] to-[#ef88a3] hover:opacity-90 transition-all text-white font-black text-sm rounded-xl mt-4 shadow-md flex items-center justify-center gap-2"
                 >
@@ -906,7 +923,7 @@ export default function App() {
 
               <div className="mt-6 text-center text-xs font-semibold opacity-80">
                 {isRegisterMode ? 'Already have an account? ' : "Don't have an account? "}
-                <button 
+                <button
                   onClick={() => {
                     setIsRegisterMode(!isRegisterMode);
                     setAuthError('');
