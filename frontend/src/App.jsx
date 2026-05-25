@@ -80,6 +80,7 @@ export default function App() {
   const [authError, setAuthError] = useState('');
   const [authMessage, setAuthMessage] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
@@ -747,97 +748,91 @@ export default function App() {
         )}
 
         {currentView === 'create' && (
-          <div className="flex-1 flex overflow-hidden animate-in fade-in duration-300">
+  <div className="flex-1 flex overflow-hidden animate-in fade-in duration-300">
 
-            {/* FAR LEFT: Tooling Sidebar (Fixed Width) */}
-            <div className={`w-20 flex flex-col items-center py-6 gap-6 border-r transition-colors ${darkMode ? 'border-[#312543] bg-[#150f20]/50' : 'border-[#fbcad4] bg-[#fffbfb]/50'
-              }`}>
-              {/* Upload Button */}
-              <button onClick={() => document.getElementById('file-upload').click()}
-                className={`p-4 rounded-2xl shadow-lg border-2 border-dashed transition-all hover:scale-105 active:scale-95 ${darkMode ? 'bg-[#251c36] border-[#312543] text-[#e45d82]' : 'bg-white border-[#f7c0cc] text-[#e96b8d]'
-                  }`}>
-                <Upload size={24} />
-              </button>
-              <input type="file" id="file-upload" className="hidden" />
+    {/* FAR LEFT: Tooling Sidebar (Fixed Width) */}
+    <div className={`w-20 flex flex-col items-center py-6 gap-6 border-r transition-colors ${darkMode ? 'border-[#312543] bg-[#150f20]/50' : 'border-[#fbcad4] bg-[#fffbfb]/50'}`}>
+      
+      {/* Upload Button */}
+      <button onClick={() => document.getElementById('file-upload').click()}
+        className={`p-4 rounded-2xl shadow-lg border-2 border-dashed transition-all hover:scale-105 active:scale-95 ${darkMode ? 'bg-[#251c36] border-[#312543] text-[#e45d82]' : 'bg-white border-[#f7c0cc] text-[#e96b8d]'}`}>
+        <Upload size={24} />
+      </button>
+      <input type="file" id="file-upload" className="hidden" />
 
-              {/* Sleek divider line */}
-              <div className={`w-10 h-[1px] ${darkMode ? 'bg-[#312543]' : 'bg-[#fad5de]'}`} />
+      <div className={`w-10 h-[1px] ${darkMode ? 'bg-[#312543]' : 'bg-[#fad5de]'}`} />
 
-              {iconRegistry.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    if (!currentUser) {
-                      setIsLoginModalOpen(true);
-                      return;
-                    }
-                    // Trigger the specific action if it exists (like AI toggle)
-                    if (item.action) item.action();
-                    // Trigger the navigation if a view is specified
-                    if (item.view) setCurrentView(item.view);
-                  }}
-                  className={`w-16 flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${(item.view && currentView === item.view) || (item.id === 'AI' && isAiDrawerOpen)
-                      ? (darkMode ? 'text-[#e96b8d] bg-[#251c36]' : 'text-[#e96b8d] bg-[#ffeef2]')
-                      : 'opacity-60 hover:opacity-100'
-                    }`}
-                >
-                  <item.icon size={24} />
-                  <span className="text-[9px] font-black">{item.label}</span>
-                </button>
-              ))}
-            </div>
+      {/* Tools Toggle Button */}
+      <button 
+        onClick={() => setIsToolsOpen(!isToolsOpen)}
+        className={`w-16 flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${isToolsOpen ? (darkMode ? 'text-[#e96b8d] bg-[#251c36]' : 'text-[#e96b8d] bg-[#ffeef2]') : 'opacity-60 hover:opacity-100'}`}>
+        <SlidersHorizontal size={24} />
+        <span className="text-[9px] font-black">Tools</span>
+      </button>
 
-            {/* CENTER: Canvas Workspace */}
-            <div className="flex-1 p-6 relative flex flex-col">
+      {/* Existing Registry Items */}
+      {iconRegistry.map((item) => (
+        <button
+          key={item.id}
+          onClick={() => {
+            if (!currentUser) { setIsLoginModalOpen(true); return; }
+            if (item.action) item.action();
+            if (item.view) setCurrentView(item.view);
+          }}
+          className={`w-16 flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${(item.view && currentView === item.view) || (item.id === 'AI' && isAiDrawerOpen)
+              ? (darkMode ? 'text-[#e96b8d] bg-[#251c36]' : 'text-[#e96b8d] bg-[#ffeef2]')
+              : 'opacity-60 hover:opacity-100'}`}
+        >
+          <item.icon size={24} />
+          <span className="text-[9px] font-black">{item.label}</span>
+        </button>
+      ))}
+    </div>
 
-              {/* The Design Canvas */}
-              <div className={`flex-1 rounded-3xl border-2 border-dashed flex items-center justify-center relative overflow-hidden ${darkMode ? 'border-[#312543]' : 'border-[#fbcad4]'
-                }`}>
-                <p className="opacity-40 font-black text-sm tracking-widest uppercase">Upload a room photo to begin</p>
-              </div>
+    {/* CENTER: Canvas Workspace */}
+    <div className="flex-1 flex flex-col overflow-hidden">
+      
+      {/* NEW: Canva-style Horizontal Toolbar */}
+      {isToolsOpen && (
+        <div className={`h-16 flex items-center px-6 gap-4 border-b ${darkMode ? 'bg-[#1b1528] border-[#312543]' : 'bg-white border-[#f7c0cc]'}`}>
+          <div className="text-[10px] font-black uppercase opacity-40 mr-2">Editor:</div>
+          {['Filter', 'Crop', 'Flip', 'Rotate', 'Opacity', 'Scale'].map(tool => (
+            <button key={tool} className={`px-4 py-1.5 rounded-lg text-[11px] font-bold transition-all ${darkMode ? 'bg-[#251c36] hover:bg-[#312543]' : 'bg-[#ffeef2] hover:bg-[#fbcad4]'}`}>
+              {tool}
+            </button>
+          ))}
+        </div>
+      )}
 
-              {/* BOTTOM: Expandable AI Generator Rectangle */}
-              <div className={`mt-6 p-6 rounded-2xl border transition-all ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'
-                }`}>
-                {/* Toggle Header */}
-                <button className="w-full flex justify-between font-black items-center"
-                  onClick={() => setIsAiDrawerOpen(!isAiDrawerOpen)}>
-                  <span className="flex items-center gap-2 text-[#e96b8d]">
-                    <Sparkles size={18} /> AI Room Generator
-                  </span>
-                  {isAiDrawerOpen ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
-                </button>
+      {/* The Design Canvas Area */}
+      <div className="flex-1 p-6 relative flex flex-col overflow-y-auto">
+        <div className={`flex-1 rounded-3xl border-2 border-dashed flex items-center justify-center relative overflow-hidden ${darkMode ? 'border-[#312543]' : 'border-[#fbcad4]'}`}>
+          <p className="opacity-40 font-black text-sm tracking-widest uppercase">Upload a room photo to begin</p>
+        </div>
 
-                {/* Generative UI Content */}
-                {isAiDrawerOpen && (
-                  <div className="mt-6 animate-in slide-in-from-bottom-4 duration-300">
-                    <input
-                      type="text"
-                      placeholder="Describe your ideal room aesthetics..."
-                      onFocus={(e) => {
-                        if (!currentUser) {
-                          e.target.blur();
-                          setIsLoginModalOpen(true);
-                        }
-                      }}
-                      className={`w-full p-4 rounded-xl border mb-6 font-bold text-sm ${darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
-                        }`}
-                    />
-
-                    <div className="grid grid-cols-4 gap-4">
-                      {[1, 2, 3, 4].map(i => (
-                        <div key={i} className={`h-32 rounded-xl border-2 flex items-center justify-center cursor-pointer hover:border-[#e96b8d] transition-all ${darkMode ? 'bg-[#1b1528] border-[#312543]' : 'bg-[#ffeef2] border-[#fbcad4]'
-                          }`}>
-                          <span className="text-[10px] font-black opacity-30">VARIANT {i}</span>
-                        </div>
-                      ))}
-                    </div>
+        {/* BOTTOM: Expandable AI Generator */}
+        <div className={`mt-6 p-6 rounded-2xl border transition-all ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+          <button className="w-full flex justify-between font-black items-center" onClick={() => setIsAiDrawerOpen(!isAiDrawerOpen)}>
+            <span className="flex items-center gap-2 text-[#e96b8d]"><Sparkles size={18} /> AI Room Generator</span>
+            {isAiDrawerOpen ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+          </button>
+          {isAiDrawerOpen && (
+            <div className="mt-6 animate-in slide-in-from-bottom-4 duration-300">
+              <input type="text" placeholder="Describe your ideal room aesthetics..." className={`w-full p-4 rounded-xl border mb-6 font-bold text-sm ${darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'}`} />
+              <div className="grid grid-cols-4 gap-4">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className={`h-32 rounded-xl border-2 flex items-center justify-center cursor-pointer hover:border-[#e96b8d] transition-all ${darkMode ? 'bg-[#1b1528] border-[#312543]' : 'bg-[#ffeef2] border-[#fbcad4]'}`}>
+                    <span className="text-[10px] font-black opacity-30">VARIANT {i}</span>
                   </div>
-                )}
+                ))}
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
         {currentView === 'collaborate' && <CollaboratePage darkMode={darkMode} />}
 
