@@ -16,7 +16,7 @@ export default function App() {
   
   // Track current structural viewport layout view mode without destroying layout code
   // Modes: 'workspace' | 'history' | 'preferences'
-  const [currentView, setCurrentView] = useState('preferences'); 
+  const [currentView, setCurrentView] = useState('workspace'); 
   // Track selected template for full-view details inside history page
   const [selectedTemplate, setSelectedTemplate] = useState(1);
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(true);
