@@ -7,6 +7,8 @@ import {
   Upload, ChevronUp, Lightbulb as Bulb
 } from 'lucide-react';
 
+
+
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   // Toggle for the independent floating settings dropdown menu
@@ -18,6 +20,60 @@ export default function App() {
   // Track selected template for full-view details inside history page
   const [selectedTemplate, setSelectedTemplate] = useState(1);
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(true);
+
+  // Authentication States
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [emailInput, setEmailInput] = useState('');
+  const [usernameInput, setUsernameInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authError, setAuthError] = useState('');
+  const [authMessage, setAuthMessage] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+
+  const handleAuthSubmit = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthMessage('');
+    setAuthLoading(true);
+
+    const url = isRegisterMode ? 'http://localhost:3001/api/register' : 'http://localhost:3001/api/login';
+    const body = isRegisterMode 
+      ? { email: emailInput, username: usernameInput, password: passwordInput }
+      : { email: emailInput, password: passwordInput };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || 'Something went wrong');
+      }
+
+      // Check if registration or login response
+      if (isRegisterMode) {
+        setAuthMessage('Registration successful! Please login.');
+        setIsRegisterMode(false);
+        setPasswordInput('');
+      } else {
+        const data = await response.json();
+        setCurrentUser({ email: emailInput, username: data.username || emailInput.split('@')[0] });
+        setIsLoginModalOpen(false);
+        setEmailInput('');
+        setPasswordInput('');
+        setUsernameInput('');
+      }
+    } catch (err) {
+      setAuthError(err.message);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
 
   // User Preferences / Design Specification States
   const [layoutAdjustment, setLayoutAdjustment] = useState('flow');
@@ -127,7 +183,16 @@ export default function App() {
         <header className={`px-8 py-4 flex items-center justify-between border-b transition-colors duration-500 shrink-0 ${
           darkMode ? 'bg-[#1e172c]/90 border-[#312543]' : 'bg-[#fff5f7]/95 border-[#fbcad4]'
         }`}>
-          <div className="flex items-center gap-4 cursor-pointer" onClick={() => setCurrentView('workspace')}>
+          <div 
+            className="flex items-center gap-4 cursor-pointer" 
+            onClick={() => {
+              if (!currentUser) {
+                setIsLoginModalOpen(true);
+              } else {
+                setCurrentView('workspace');
+              }
+            }}
+          >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-base tracking-tighter shadow-md ${
               darkMode ? 'bg-[#e45d82] text-white' : 'bg-[#e96b8d] text-white'
             }`}>
@@ -137,18 +202,57 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full border text-sm font-bold tracking-wide transition-all shadow-sm ${
-              darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#d4c6e3]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#7d4853]'
-            }`}>
+            <button 
+              onClick={() => {
+                if (!currentUser) {
+                  setIsLoginModalOpen(true);
+                }
+              }}
+              className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full border text-sm font-bold tracking-wide transition-all shadow-sm ${
+                darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#d4c6e3]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#7d4853]'
+              }`}
+            >
               <Users size={18} /> Collaborate
             </button>
             
             <button 
-              onClick={() => setCurrentView('create')}
+              onClick={() => {
+                if (!currentUser) {
+                  setIsLoginModalOpen(true);
+                } else {
+                  setCurrentView('create');
+                }
+              }}
               className="px-6 py-2.5 rounded-full text-sm font-extrabold text-white shadow-md bg-gradient-to-r from-[#e96b8d] to-[#ef88a3] hover:opacity-90 transition-all"
             >
               + Create Design
             </button>
+
+            {/* Login / Logout Button */}
+            {currentUser ? (
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-black tracking-wide opacity-80">
+                  👋 {currentUser.username}
+                </span>
+                <button 
+                  onClick={() => setCurrentUser(null)}
+                  className={`px-5 py-2.5 rounded-full border text-sm font-bold transition-all shadow-sm ${
+                    darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#ff8bb0]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#e96b8d]'
+                  }`}
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={() => setIsLoginModalOpen(true)}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-full border text-sm font-bold tracking-wide transition-all shadow-sm ${
+                  darkMode ? 'border-[#3d2e53] bg-[#241a35] hover:bg-[#2d2142] text-[#d4c6e3]' : 'border-[#f3bece] bg-white hover:bg-[#fff9fa] text-[#7d4853]'
+                }`}
+              >
+                Login
+              </button>
+            )}
 
             {/* FLOATING SETTINGS MENU DROPDOWN */}
             <div className="relative">
@@ -167,14 +271,28 @@ export default function App() {
                   darkMode ? 'bg-[#1e172c] border-[#3d2e53]' : 'bg-white border-[#f7b0be]'
                 }`}>
                   <button 
-                    onClick={() => { setCurrentView('history'); setIsSettingsOpen(false); }} 
+                    onClick={() => {
+                      if (!currentUser) {
+                        setIsLoginModalOpen(true);
+                      } else {
+                        setCurrentView('history');
+                        setIsSettingsOpen(false);
+                      }
+                    }} 
                     className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs text-left transition-colors ${darkMode ? 'hover:bg-[#251c36] text-[#dfd5eb]' : 'hover:bg-[#ffeef2] text-[#5c353d]'}`}
                   >
                     <span className="flex items-center gap-2.5"><History size={16} className="text-[#e96b8d]" /> History</span>
                     <ChevronRight size={12} className="opacity-40" />
                   </button>
                   <button 
-                    onClick={() => { setCurrentView('preferences'); setIsSettingsOpen(false); }} 
+                    onClick={() => {
+                      if (!currentUser) {
+                        setIsLoginModalOpen(true);
+                      } else {
+                        setCurrentView('preferences');
+                        setIsSettingsOpen(false);
+                      }
+                    }} 
                     className={`w-full flex items-center justify-between p-3 rounded-xl font-bold text-xs text-left transition-colors ${darkMode ? 'hover:bg-[#251c36] text-[#dfd5eb]' : 'hover:bg-[#ffeef2] text-[#5c353d]'}`}
                   >
                     <span className="flex items-center gap-2.5"><Sliders size={16} className="text-[#e96b8d]" /> Preference</span>
@@ -223,8 +341,27 @@ export default function App() {
                   </div>
                 </div>
                 <div className="mt-4 relative">
-                  <input type="text" placeholder="Type your reply here..." className={`w-full pl-4 pr-12 py-3.5 rounded-xl border text-sm font-semibold focus:outline-none ${darkMode ? 'bg-[#251c36] border-[#3a2d50] text-white' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'}`} />
-                  <button className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-lg ${darkMode ? 'text-[#e45d82]' : 'text-[#e96b8d]'}`}><Send size={16} /></button>
+                  <input 
+                    type="text" 
+                    placeholder="Type your reply here..." 
+                    onFocus={(e) => {
+                      if (!currentUser) {
+                        e.target.blur();
+                        setIsLoginModalOpen(true);
+                      }
+                    }}
+                    className={`w-full pl-4 pr-12 py-3.5 rounded-xl border text-sm font-semibold focus:outline-none ${darkMode ? 'bg-[#251c36] border-[#3a2d50] text-white' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'}`} 
+                  />
+                  <button 
+                    onClick={() => {
+                      if (!currentUser) {
+                        setIsLoginModalOpen(true);
+                      }
+                    }}
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-lg ${darkMode ? 'text-[#e45d82]' : 'text-[#e96b8d]'}`}
+                  >
+                    <Send size={16} />
+                  </button>
                 </div>
               </div>
 
@@ -603,6 +740,10 @@ export default function App() {
         <button 
           key={item.id}
           onClick={() => {
+            if (!currentUser) {
+              setIsLoginModalOpen(true);
+              return;
+            }
             // Trigger the specific action if it exists (like AI toggle)
             if (item.action) item.action();
             // Trigger the navigation if a view is specified
@@ -646,7 +787,15 @@ export default function App() {
         {/* Generative UI Content */}
         {isAiDrawerOpen && (
           <div className="mt-6 animate-in slide-in-from-bottom-4 duration-300">
-            <input type="text" placeholder="Describe your ideal room aesthetics..." 
+            <input 
+              type="text" 
+              placeholder="Describe your ideal room aesthetics..." 
+              onFocus={(e) => {
+                if (!currentUser) {
+                  e.target.blur();
+                  setIsLoginModalOpen(true);
+                }
+              }}
               className={`w-full p-4 rounded-xl border mb-6 font-bold text-sm ${
                 darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
               }`} 
@@ -670,6 +819,108 @@ export default function App() {
 
 
 
+
+        {/* LOGIN MODAL */}
+        {isLoginModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className={`w-[400px] p-8 rounded-3xl border shadow-2xl relative ${
+              darkMode ? 'bg-[#1b1528] border-[#312543] text-white' : 'bg-white border-[#f7b0be] text-[#4d2d34]'
+            }`}>
+              
+              {/* Close Button */}
+              <button 
+                onClick={() => {
+                  setIsLoginModalOpen(false);
+                  setAuthError('');
+                  setAuthMessage('');
+                }}
+                className="absolute top-5 right-5 p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+              >
+                ✕
+              </button>
+
+              <h2 className="text-2xl font-black mb-6 tracking-tight flex items-center gap-2">
+                🔑 {isRegisterMode ? 'Create Account' : 'Welcome Back'}
+              </h2>
+
+              <form onSubmit={handleAuthSubmit} className="space-y-4">
+                {isRegisterMode && (
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-wider opacity-60 block mb-1.5">Username</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={usernameInput}
+                      onChange={(e) => setUsernameInput(e.target.value)}
+                      placeholder="Your name"
+                      className={`w-full p-3 border rounded-xl font-bold text-sm focus:outline-none transition-colors ${
+                        darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
+                      }`}
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-wider opacity-60 block mb-1.5">Email Address</label>
+                  <input 
+                    type="email" 
+                    required
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    placeholder="name@example.com"
+                    className={`w-full p-3 border rounded-xl font-bold text-sm focus:outline-none transition-colors ${
+                      darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-wider opacity-60 block mb-1.5">Password</label>
+                  <input 
+                    type="password" 
+                    required
+                    value={passwordInput}
+                    onChange={(e) => setPasswordInput(e.target.value)}
+                    placeholder="••••••••"
+                    className={`w-full p-3 border rounded-xl font-bold text-sm focus:outline-none transition-colors ${
+                      darkMode ? 'bg-[#251c36] border-[#312543] text-white' : 'bg-white border-[#f7c0cc]'
+                    }`}
+                  />
+                </div>
+
+                {authError && (
+                  <p className="text-red-500 font-bold text-xs mt-2">{authError}</p>
+                )}
+                {authMessage && (
+                  <p className="text-green-500 font-bold text-xs mt-2">{authMessage}</p>
+                )}
+
+                <button 
+                  type="submit" 
+                  disabled={authLoading}
+                  className="w-full py-3.5 bg-gradient-to-r from-[#e96b8d] to-[#ef88a3] hover:opacity-90 transition-all text-white font-black text-sm rounded-xl mt-4 shadow-md flex items-center justify-center gap-2"
+                >
+                  {authLoading ? 'Please wait...' : isRegisterMode ? 'Sign Up' : 'Sign In'}
+                </button>
+              </form>
+
+              <div className="mt-6 text-center text-xs font-semibold opacity-80">
+                {isRegisterMode ? 'Already have an account? ' : "Don't have an account? "}
+                <button 
+                  onClick={() => {
+                    setIsRegisterMode(!isRegisterMode);
+                    setAuthError('');
+                    setAuthMessage('');
+                  }}
+                  className="text-[#e96b8d] font-bold hover:underline"
+                >
+                  {isRegisterMode ? 'Sign In' : 'Sign Up'}
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
