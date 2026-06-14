@@ -96,6 +96,14 @@ export default function App() {
   const [authMessage, setAuthMessage] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false); 
+  const myImages = [
+  'https://threejs.org/examples/textures/cube/Bridge2/posx.jpg',
+  'https://threejs.org/examples/textures/cube/Bridge2/negx.jpg',
+  'https://threejs.org/examples/textures/cube/Bridge2/posy.jpg',
+  'https://threejs.org/examples/textures/cube/Bridge2/negy.jpg',
+  'https://threejs.org/examples/textures/cube/Bridge2/posz.jpg',
+  'https://threejs.org/examples/textures/cube/Bridge2/negz.jpg'
+];
 
   const fetchUserData = async () => {
     const token = localStorage.getItem('spaceSyncToken');
@@ -476,7 +484,7 @@ export default function App() {
             </aside>
 
             <main className="w-[44%] rounded-[28px] overflow-hidden relative border border-black/5 shadow-md bg-[#2b2538] shrink-0">
-              <RoomViewer3D imageUrl={generatedRoomImageUrl} />
+              <RoomViewer3D imageUrls={myImages} />
               <div className="absolute top-5 right-5 flex flex-col gap-2.5">
                 <button className={`p-2.5 rounded-xl border shadow-md ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#e45d82]' : 'bg-white/95 border-[#fad5de] text-[#e96b8d]'}`}><Smartphone size={18} /></button>
                 <button className={`w-10 h-10 rounded-xl border shadow-md font-extrabold text-sm flex items-center justify-center ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#a591bf]' : 'bg-white/95 border-[#fad5de] text-[#7d515a]'}`}>3D</button>
