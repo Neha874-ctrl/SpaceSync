@@ -1,4 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import RoomViewer3D from './RoomViewer3D';
+import { Canvas, useLoader } from '@react-three/fiber';
+import { OrbitControls, Grid, Environment } from '@react-three/drei';
+import * as THREE from 'three';
+
+
 import {
   MessageSquare, Sparkles, Sliders, LayoutGrid,
   Users, Smartphone, Sun, Moon, Send, MoreHorizontal,
@@ -59,6 +65,7 @@ function CollaboratePage({ darkMode }) {
 
 
 export default function App() {
+  const [generatedRoomImageUrl, setGeneratedRoomImageUrl] = useState('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80');
   const [currentUser, setCurrentUser] = useState(() => {
     const user = localStorage.getItem('spaceSyncUser');
     try {
@@ -257,7 +264,15 @@ export default function App() {
     { id: 'Budget', icon: DollarSign, label: 'Budget', view: 'budget' }
   ];
 
+  
+
+
+<RoomViewer3D imageUrl={generatedRoomImageUrl} />
+
+
+
   return (
+    
     <div className={`h-screen w-screen flex flex-col font-sans overflow-hidden transition-colors duration-500 p-3 ${darkMode ? 'bg-[#0f0b19]' : 'bg-[#f7b0be]'
       }`}>
 
@@ -461,7 +476,7 @@ export default function App() {
             </aside>
 
             <main className="w-[44%] rounded-[28px] overflow-hidden relative border border-black/5 shadow-md bg-[#2b2538] shrink-0">
-              <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80')` }} />
+              <RoomViewer3D imageUrl={generatedRoomImageUrl} />
               <div className="absolute top-5 right-5 flex flex-col gap-2.5">
                 <button className={`p-2.5 rounded-xl border shadow-md ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#e45d82]' : 'bg-white/95 border-[#fad5de] text-[#e96b8d]'}`}><Smartphone size={18} /></button>
                 <button className={`w-10 h-10 rounded-xl border shadow-md font-extrabold text-sm flex items-center justify-center ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#a591bf]' : 'bg-white/95 border-[#fad5de] text-[#7d515a]'}`}>3D</button>
@@ -470,6 +485,25 @@ export default function App() {
                 <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between ${darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'}`}><span className="flex items-center gap-2"><Smartphone size={14} /> WebXR</span><span>📋</span></button>
                 <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between ${darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'}`}><span className="flex items-center gap-2"><Users size={14} /> Multiplayer</span><span>👥</span></button>
               </div>
+              {/* Top-Right HUD */}
+  <div className="absolute top-5 right-5 flex flex-col gap-2.5">
+    <button className={`p-2.5 rounded-xl border shadow-md ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#e45d82]' : 'bg-white/95 border-[#fad5de] text-[#e96b8d]'}`}>
+      <Smartphone size={18} />
+    </button>
+    <button className={`w-10 h-10 rounded-xl border shadow-md font-extrabold text-sm flex items-center justify-center ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#a591bf]' : 'bg-white/95 border-[#fad5de] text-[#7d515a]'}`}>
+      3D
+    </button>
+  </div>
+
+  {/* Bottom-Right HUD */}
+  <div className="absolute bottom-5 right-5 flex flex-col gap-2.5 w-[150px]">
+    <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between ${darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'}`}>
+      <span className="flex items-center gap-2"><Smartphone size={14} /> WebXR</span><span>📋</span>
+    </button>
+    <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between ${darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'}`}>
+      <span className="flex items-center gap-2"><Users size={14} /> Multiplayer</span><span>👥</span>
+    </button>
+  </div>
             </main>
 
             <aside className={`w-[28%] rounded-[24px] p-5 border flex flex-col h-full shrink-0 min-w-[340px] ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
