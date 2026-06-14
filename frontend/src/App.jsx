@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   MessageSquare, Sparkles, Sliders, LayoutGrid,
   Users, Smartphone, Sun, Moon, Send, MoreHorizontal,
@@ -59,6 +59,14 @@ function CollaboratePage({ darkMode }) {
 
 
 export default function App() {
+  const [currentUser, setCurrentUser] = useState(() => {
+    const user = localStorage.getItem('spaceSyncUser');
+    try {
+      return user ? JSON.parse(user) : null;
+    } catch {
+      return null;
+    }
+  });
   const [darkMode, setDarkMode] = useState(false);
   // Toggle for the independent floating settings dropdown menu
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -82,11 +90,31 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false); 
 
-  // 2. FIXED: Persistent state initialization for user
-  const [currentUser, setCurrentUser] = useState(() => {
-    const savedUser = localStorage.getItem('spaceSyncUser');
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
+  const fetchUserData = async () => {
+    const token = localStorage.getItem('spaceSyncToken');
+    if (!token) return;
+
+    try {
+      const response = await fetch('http://localhost:3001/api/profile', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentUser(prev => ({ ...prev, ...data }));
+      }
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+    }
+  };
+  useEffect(() => {
+    if (currentUser) {
+      fetchUserData();
+    }
+  }, []);
   
 
   const handleAuthSubmit = async (e) => {
@@ -112,21 +140,22 @@ export default function App() {
         setIsRegisterMode(false);
       } else {
         const data = await response.json();
-        const userObj = { email: emailInput, username: data.username || emailInput.split('@')[0] };
         
-        // PERSISTENCE: Save to State and LocalStorage
-        setCurrentUser(userObj);
-        localStorage.setItem('spaceSyncUser', JSON.stringify(userObj));
+        // Save token and username to localStorage
+        localStorage.setItem('spaceSyncToken', data.token);
+        localStorage.setItem('spaceSyncUser', JSON.stringify({ 
+            username: data.username 
+        }));
 
+        setCurrentUser({ username: data.username });
         setIsLoginModalOpen(false);
-        setEmailInput('');
-        setPasswordInput('');
       }
     } catch (err) {
       setAuthError(err.message);
     } finally {
       setAuthLoading(false);
     }
+    // REMOVED the logout lines that were down here!
   };
 
   // 3. FIXED: Logout must clear persistence
