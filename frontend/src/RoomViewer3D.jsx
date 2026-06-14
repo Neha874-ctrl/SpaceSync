@@ -17,7 +17,7 @@ const Panorama = ({ imageUrl }) => {
 // Export the component
 export default function RoomViewer3D({ imageUrl }) {
   return (
-    <div style={{ width: '100%', height: '500px', borderRadius: '20px', overflow: 'hidden' }}>
+    <div style={{ width: '100%', height: '657px', borderRadius: '20px', overflow: 'hidden' }}>
       <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
         <ambientLight intensity={1} />
         <Grid position={[0, -5, 0]} infiniteGrid cellSize={1} cellColor="#e96b8d" sectionColor="#e96b8d" fadeDistance={25} />
