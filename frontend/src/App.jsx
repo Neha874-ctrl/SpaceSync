@@ -165,18 +165,22 @@ export default function App() {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
   // Default 3D room images — will be replaced when user uploads 6 room photos
-  const [roomImageUrls, setRoomImageUrls] = useState([
-    'https://threejs.org/examples/textures/cube/Bridge2/posx.jpg',
-    'https://threejs.org/examples/textures/cube/Bridge2/negx.jpg',
-    'https://threejs.org/examples/textures/cube/Bridge2/posy.jpg',
-    'https://threejs.org/examples/textures/cube/Bridge2/negy.jpg',
-    'https://threejs.org/examples/textures/cube/Bridge2/posz.jpg',
-    'https://threejs.org/examples/textures/cube/Bridge2/negz.jpg'
-  ]);
+
 
   const handleRoomImagesReady = (urls) => {
-    setRoomImageUrls(urls);
-  };
+  console.log("URLs received in App.jsx:", urls); // Check if this logs 6 valid URLs
+  setRoomImageUrls(urls); // This should trigger a re-render of RoomViewer3D
+};
+   const [roomImageUrls, setRoomImageUrls] = useState([
+     'https://threejs.org/examples/textures/cube/Bridge2/posx.jpg',
+     'https://threejs.org/examples/textures/cube/Bridge2/negx.jpg',
+     'https://threejs.org/examples/textures/cube/Bridge2/posy.jpg',
+     'https://threejs.org/examples/textures/cube/Bridge2/negy.jpg',
+     'https://threejs.org/examples/textures/cube/Bridge2/posz.jpg',
+     'https://threejs.org/examples/textures/cube/Bridge2/negz.jpg'
+   ]);
+
+  
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -561,86 +565,77 @@ export default function App() {
            ========================================================================= */}
 
         {currentView === 'workspace' && (
-          /* VIEW 1: DEFAULT CONFIGURATION WORKSPACE INTERACTIVE CANVAS */
-          <div className="flex-1 flex overflow-hidden p-6 gap-6">
-            <aside className="w-[28%] flex flex-col gap-5 h-full shrink-0 min-w-[340px]">
-              <ChatBox
-                darkMode={darkMode}
-                roomData={{ budget: budgetMax, spatialFocus: layoutAdjustment }}
-                onRoomImagesReady={handleRoomImagesReady}
-              />
+  /* VIEW 1: DEFAULT CONFIGURATION WORKSPACE INTERACTIVE CANVAS */
+  <div className="flex-1 flex overflow-hidden p-6 gap-6">
+    <aside className="w-[28%] flex flex-col gap-5 h-full shrink-0 min-w-[340px]">
+      <ChatBox
+        darkMode={darkMode}
+        roomData={{ budget: budgetMax, spatialFocus: layoutAdjustment }}
+        onRoomImagesReady={handleRoomImagesReady}
+      />
 
-              <div className={`p-5 rounded-[24px] border flex flex-col gap-4 transition-all duration-500 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
-                <div className="text-sm font-extrabold tracking-tight opacity-80 flex items-center gap-2"><Sliders size={16} className="text-[#e96b8d]" /> Spatial Focus: <span className="opacity-100 font-bold text-[#e96b8d]">[Max Walkway]</span></div>
-                <div>
-                  <input type="range" min="1" max="100" defaultValue="45" className="w-full accent-[#e96b8d] h-[6px] bg-gray-300 rounded-lg appearance-none cursor-pointer" />
-                  <div className="flex justify-between text-xs font-bold opacity-60 mt-2"><span>Max</span><span>Max Seating</span></div>
-                </div>
-                <div>
-                  <div className="text-sm font-extrabold tracking-tight opacity-80 mb-1">Budget: <span className="opacity-100 font-bold text-[#e96b8d]">[Low - High]</span></div>
-                  <input type="range" min="1" max="100" defaultValue="25" className="w-full accent-[#e96b8d] h-[6px] bg-gray-300 rounded-lg appearance-none cursor-pointer" />
-                  <div className="flex justify-between text-xs font-bold opacity-60 mt-2"><span>Low</span><span>High</span></div>
-                </div>
-              </div>
-            </aside>
+      <div className={`p-5 rounded-[24px] border flex flex-col gap-4 transition-all duration-500 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+        <div className="text-sm font-extrabold tracking-tight opacity-80 flex items-center gap-2"><Sliders size={16} className="text-[#e96b8d]" /> Spatial Focus: <span className="opacity-100 font-bold text-[#e96b8d]">[Max Walkway]</span></div>
+        <div>
+          <input type="range" min="1" max="100" defaultValue="45" className="w-full accent-[#e96b8d] h-[6px] bg-gray-300 rounded-lg appearance-none cursor-pointer" />
+          <div className="flex justify-between text-xs font-bold opacity-60 mt-2"><span>Max</span><span>Max Seating</span></div>
+        </div>
+        <div>
+          <div className="text-sm font-extrabold tracking-tight opacity-80 mb-1">Budget: <span className="opacity-100 font-bold text-[#e96b8d]">[Low - High]</span></div>
+          <input type="range" min="1" max="100" defaultValue="25" className="w-full accent-[#e96b8d] h-[6px] bg-gray-300 rounded-lg appearance-none cursor-pointer" />
+          <div className="flex justify-between text-xs font-bold opacity-60 mt-2"><span>Low</span><span>High</span></div>
+        </div>
+      </div>
+    </aside>
 
-            <main className="w-[44%] rounded-[28px] overflow-hidden relative border border-black/5 shadow-md bg-[#2b2538] shrink-0">
-              <RoomViewer3D imageUrls={roomImageUrls} />
-              <div className="absolute top-5 right-5 flex flex-col gap-2.5">
-                <button className={`p-2.5 rounded-xl border shadow-md ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#e45d82]' : 'bg-white/95 border-[#fad5de] text-[#e96b8d]'}`}><Smartphone size={18} /></button>
-                <button className={`w-10 h-10 rounded-xl border shadow-md font-extrabold text-sm flex items-center justify-center ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#a591bf]' : 'bg-white/95 border-[#fad5de] text-[#7d515a]'}`}>3D</button>
-              </div>
-              <div className="absolute bottom-5 right-5 flex flex-col gap-2.5 w-[150px]">
-                <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between ${darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'}`}><span className="flex items-center gap-2"><Smartphone size={14} /> WebXR</span><span>📋</span></button>
-                <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between ${darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'}`}><span className="flex items-center gap-2"><Users size={14} /> Multiplayer</span><span>👥</span></button>
-              </div>
-              {/* Top-Right HUD */}
-  <div className="absolute top-5 right-5 flex flex-col gap-2.5">
-    <button className={`p-2.5 rounded-xl border shadow-md ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#e45d82]' : 'bg-white/95 border-[#fad5de] text-[#e96b8d]'}`}>
-      <Smartphone size={18} />
-    </button>
-    <button className={`w-10 h-10 rounded-xl border shadow-md font-extrabold text-sm flex items-center justify-center ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#a591bf]' : 'bg-white/95 border-[#fad5de] text-[#7d515a]'}`}>
-      3D
-    </button>
-  </div>
+    <main className="w-[44%] rounded-[28px] overflow-hidden relative border border-black/5 shadow-md bg-[#2b2538] shrink-0">
+      <RoomViewer3D imageUrls={roomImageUrls} />
+      
+      {/* Top-Right HUD */}
+      <div className="absolute top-5 right-5 flex flex-col gap-2.5">
+        <button className={`p-2.5 rounded-xl border shadow-md ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#e45d82]' : 'bg-white/95 border-[#fad5de] text-[#e96b8d]'}`}>
+          <Smartphone size={18} />
+        </button>
+        <button className={`w-10 h-10 rounded-xl border shadow-md font-extrabold text-sm flex items-center justify-center ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#a591bf]' : 'bg-white/95 border-[#fad5de] text-[#7d515a]'}`}>
+          3D
+        </button>
+      </div>
 
-  {/* Bottom-Right HUD */}
-  <div className="absolute bottom-5 right-5 flex flex-col gap-2.5 w-[150px]">
-    <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between ${darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'}`}>
-      <span className="flex items-center gap-2"><Smartphone size={14} /> WebXR</span><span>📋</span>
-    </button>
-    <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between ${darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'}`}>
-      <span className="flex items-center gap-2"><Users size={14} /> Multiplayer</span><span>👥</span>
-    </button>
-  </div>
-            </main>
+      {/* Bottom-Right HUD */}
+      <div className="absolute bottom-5 right-5 flex flex-col gap-2.5 w-[150px]">
+        <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between ${darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'}`}>
+          <span className="flex items-center gap-2"><Smartphone size={14} /> WebXR</span><span>📋</span>
+        </button>
+        <button className={`w-full py-3 px-4 rounded-xl border shadow-md font-bold text-xs flex items-center justify-between ${darkMode ? 'bg-[#1e162d]/95 border-[#3d2e53] text-[#ff83a4]' : 'bg-[#fff0f3]/95 border-[#fbcad4] text-[#e96b8d]'}`}>
+          <span className="flex items-center gap-2"><Users size={14} /> Multiplayer</span><span>👥</span>
+        </button>
+      </div>
+    </main>
 
-
-
-            <aside className={`w-[28%] rounded-[24px] p-5 border flex flex-col h-full shrink-0 min-w-[340px] ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
-              <div className="pb-3 border-b border-dashed border-current opacity-50 text-sm font-bold tracking-wider mb-4 flex items-center justify-between"><span className="text-base font-bold">Assets</span><MoreHorizontal size={18} /></div>
-              <div className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-extrabold mb-4 ${darkMode ? 'bg-[#251c36] text-[#bdaed0]' : 'bg-[#ffeef2] text-[#7d4853]'}`}>
-                <span className="flex items-center gap-2 text-sm">📂 Furniture</span><ChevronDown size={16} />
-              </div>
-              <div className="flex-1 overflow-y-auto space-y-3.5 pr-1 scrollbar-none">
-                {assets.map((asset) => (
-                  <div key={asset.id} className={`p-3.5 rounded-[20px] border text-xs flex gap-4 items-center ${darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc]'}`}>
-                    <div className={`w-16 h-14 rounded-xl flex items-center justify-center font-bold text-2xl shrink-0 border ${darkMode ? 'bg-[#271d39] border-[#3d2f57]' : 'bg-[#fff0f3] border-[#fde2e8]'}`}>🛋️</div>
-                    <div className="flex-1 min-w-0 flex flex-col gap-1">
-                      <p className="font-extrabold text-sm tracking-tight truncate">{asset.name}</p>
-                      <p className="opacity-60 text-xs font-bold truncate">{asset.size}</p>
-                      <p className="font-black text-sm text-[#e96b8d] mt-0.5">{asset.price}</p>
-                    </div>
-                    <div className="flex flex-col gap-2 shrink-0">
-                      <button className={`px-3 py-1.5 rounded-lg text-xs font-extrabold tracking-tight ${darkMode ? 'bg-[#3b275c] text-[#ff8bb0]' : 'bg-[#ffeef2] text-[#e96b8d]'}`}>Details</button>
-                      <button className="opacity-50 hover:opacity-100 flex items-center justify-center py-0.5"><ExternalLink size={14} /></button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </aside>
+    <aside className={`w-[28%] rounded-[24px] p-5 border flex flex-col h-full shrink-0 min-w-[340px] ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
+      <div className="pb-3 border-b border-dashed border-current opacity-50 text-sm font-bold tracking-wider mb-4 flex items-center justify-between"><span className="text-base font-bold">Assets</span><MoreHorizontal size={18} /></div>
+      <div className={`flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-extrabold mb-4 ${darkMode ? 'bg-[#251c36] text-[#bdaed0]' : 'bg-[#ffeef2] text-[#7d4853]'}`}>
+        <span className="flex items-center gap-2 text-sm">📂 Furniture</span><ChevronDown size={16} />
+      </div>
+      <div className="flex-1 overflow-y-auto space-y-3.5 pr-1 scrollbar-none">
+        {assets.map((asset) => (
+          <div key={asset.id} className={`p-3.5 rounded-[20px] border text-xs flex gap-4 items-center ${darkMode ? 'bg-[#1e162c]/60 border-[#342749]' : 'bg-white border-[#fbd3dc]'}`}>
+            <div className={`w-16 h-14 rounded-xl flex items-center justify-center font-bold text-2xl shrink-0 border ${darkMode ? 'bg-[#271d39] border-[#3d2f57]' : 'bg-[#fff0f3] border-[#fde2e8]'}`}>🛋️</div>
+            <div className="flex-1 min-w-0 flex flex-col gap-1">
+              <p className="font-extrabold text-sm tracking-tight truncate">{asset.name}</p>
+              <p className="opacity-60 text-xs font-bold truncate">{asset.size}</p>
+              <p className="font-black text-sm text-[#e96b8d] mt-0.5">{asset.price}</p>
+            </div>
+            <div className="flex flex-col gap-2 shrink-0">
+              <button className={`px-3 py-1.5 rounded-lg text-xs font-extrabold tracking-tight ${darkMode ? 'bg-[#3b275c] text-[#ff8bb0]' : 'bg-[#ffeef2] text-[#e96b8d]'}`}>Details</button>
+              <button className="opacity-50 hover:opacity-100 flex items-center justify-center py-0.5"><ExternalLink size={14} /></button>
+            </div>
           </div>
-        )}
+        ))}
+      </div>
+    </aside>
+  </div>
+)}
 
         {currentView === 'history' && (
           /* VIEW 2: DYNAMIC HISTORY CHECKPOINT DIRECTORY */
