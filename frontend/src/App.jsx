@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import RoomViewer3D from './RoomViewer3D';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls, Grid, Environment } from '@react-three/drei';
 import * as THREE from 'three';
+import { Save} from 'lucide-react';
 
 
 import {
@@ -63,6 +64,62 @@ function CollaboratePage({ darkMode }) {
   );
 }
 
+export function CreateDesignLayout({ onSave }) {
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleFileChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const response = await fetch('http://localhost:3001/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+    
+    const data = await response.json();
+    
+    // Check if the backend actually sent back the URL
+    if (data.imageUrl) {
+      console.log("Setting image to:", data.imageUrl);
+      setSelectedImage(data.imageUrl); // Update the state with the server URL
+    }
+  } catch (err) {
+    console.error("Upload failed:", err);
+  }
+};
+
+  return (
+    <div className="p-6">
+      <header className="flex justify-between items-center pb-4 border-b">
+        <h2 className="font-bold text-lg">Create Design</h2>
+        <button onClick={onSave} className="bg-[#e96b8d] text-white px-4 py-2 rounded-lg">Save Design</button>
+      </header>
+
+      <div className="mt-6 border-2 border-dashed border-[#fad5de] rounded-3xl h-[300px] flex items-center justify-center bg-[#fffbfb]">
+        {selectedImage ? (
+          <img 
+      src={selectedImage} 
+      alt="Uploaded Room" 
+      className="w-full h-full object-cover" 
+      onError={() => console.error("Image failed to load:", selectedImage)}
+    />
+        ) : (
+          <label className="cursor-pointer flex flex-col items-center">
+            <input type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
+            <Upload size={40} className="text-[#e96b8d]" />
+            <span className="font-bold mt-2">UPLOAD A ROOM PHOTO</span>
+          </label>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
 
 export default function App() {
   const [generatedRoomImageUrl, setGeneratedRoomImageUrl] = useState('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80');
@@ -96,6 +153,86 @@ export default function App() {
   const [authMessage, setAuthMessage] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false); 
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [scale, setScale] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const preventDefaultScroll = (e) => {
+      if (uploadedImage) {
+        e.preventDefault();
+      }
+    };
+
+    container.addEventListener('wheel', preventDefaultScroll, { passive: false });
+    return () => {
+      container.removeEventListener('wheel', preventDefaultScroll);
+    };
+  }, [uploadedImage]);
+
+  const handleUploadChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch('http://localhost:3001/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error(`Server returned status ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.imageUrl) {
+        console.log("Setting uploaded image to:", data.imageUrl);
+        setUploadedImage(data.imageUrl);
+        setScale(1);
+        setPosition({ x: 0, y: 0 });
+      }
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
+  };
+
+  const handleWheel = (e) => {
+    if (!uploadedImage) return;
+    const zoomIntensity = 0.1;
+    const nextScale = Math.min(Math.max(scale + (e.deltaY < 0 ? zoomIntensity : -zoomIntensity), 1), 5);
+    setScale(nextScale);
+    if (nextScale === 1) {
+      setPosition({ x: 0, y: 0 });
+    }
+  };
+
+  const handleMouseDown = (e) => {
+    if (!uploadedImage || scale <= 1) return;
+    e.preventDefault();
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!uploadedImage || !isDragging || scale <= 1) return;
+    e.preventDefault();
+    setPosition({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
   const myImages = [
   'https://threejs.org/examples/textures/cube/Bridge2/posx.jpg',
   'https://threejs.org/examples/textures/cube/Bridge2/negx.jpg',
@@ -839,7 +976,13 @@ export default function App() {
         className={`p-4 rounded-2xl shadow-lg border-2 border-dashed transition-all hover:scale-105 active:scale-95 ${darkMode ? 'bg-[#251c36] border-[#312543] text-[#e45d82]' : 'bg-white border-[#f7c0cc] text-[#e96b8d]'}`}>
         <Upload size={24} />
       </button>
-      <input type="file" id="file-upload" className="hidden" />
+      <input 
+        type="file" 
+        id="file-upload" 
+        className="hidden" 
+        onChange={handleUploadChange} 
+        accept="image/*" 
+      />
 
       <div className={`w-10 h-[1px] ${darkMode ? 'bg-[#312543]' : 'bg-[#fad5de]'}`} />
 
@@ -887,8 +1030,34 @@ export default function App() {
 
       {/* The Design Canvas Area */}
       <div className="flex-1 p-6 relative flex flex-col overflow-y-auto">
-        <div className={`flex-1 rounded-3xl border-2 border-dashed flex items-center justify-center relative overflow-hidden ${darkMode ? 'border-[#312543]' : 'border-[#fbcad4]'}`}>
-          <p className="opacity-40 font-black text-sm tracking-widest uppercase">Upload a room photo to begin</p>
+        <div 
+          ref={containerRef}
+          onClick={() => !uploadedImage && document.getElementById('file-upload').click()}
+          onWheel={handleWheel}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          className={`flex-1 rounded-3xl border-2 border-dashed flex items-center justify-center relative overflow-hidden ${darkMode ? 'border-[#312543]' : 'border-[#fbcad4]'}`}
+          style={{
+            cursor: uploadedImage ? (scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default') : 'pointer'
+          }}
+        >
+          {uploadedImage ? (
+            <img 
+              src={uploadedImage} 
+              alt="Uploaded Room" 
+              className="w-full h-full object-contain select-none pointer-events-none" 
+              style={{
+                transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+                transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+                transformOrigin: 'center center'
+              }}
+              onError={() => console.error("Image failed to load:", uploadedImage)}
+            />
+          ) : (
+            <p className="opacity-40 font-black text-sm tracking-widest uppercase">Upload a room photo to begin</p>
+          )}
         </div>
 
         {/* BOTTOM: Expandable AI Generator */}
