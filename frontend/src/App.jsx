@@ -4,6 +4,7 @@ import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls, Grid, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { Save} from 'lucide-react';
+import { ChatBox } from './Components/ChatBox';
 
 
 import {
@@ -64,9 +65,11 @@ function CollaboratePage({ darkMode }) {
   );
 }
 
+
 export function CreateDesignLayout({ onSave }) {
   const [selectedImage, setSelectedImage] = useState(null);
 
+  
   const handleFileChange = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -122,7 +125,6 @@ export function CreateDesignLayout({ onSave }) {
 
 
 export default function App() {
-  const [generatedRoomImageUrl, setGeneratedRoomImageUrl] = useState('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80');
   const [currentUser, setCurrentUser] = useState(() => {
     const user = localStorage.getItem('spaceSyncUser');
     try {
@@ -134,6 +136,9 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   // Toggle for the independent floating settings dropdown menu
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const [userBudget, setUserBudget] = useState("Low");
+  const [userFocus, setUserFocus] = useState("Max Walkway");
 
   // Track current structural viewport layout view mode without destroying layout code
   // Modes: 'workspace' | 'history' | 'preferences'
@@ -159,7 +164,19 @@ export default function App() {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
+  // Default 3D room images — will be replaced when user uploads 6 room photos
+  const [roomImageUrls, setRoomImageUrls] = useState([
+    'https://threejs.org/examples/textures/cube/Bridge2/posx.jpg',
+    'https://threejs.org/examples/textures/cube/Bridge2/negx.jpg',
+    'https://threejs.org/examples/textures/cube/Bridge2/posy.jpg',
+    'https://threejs.org/examples/textures/cube/Bridge2/negy.jpg',
+    'https://threejs.org/examples/textures/cube/Bridge2/posz.jpg',
+    'https://threejs.org/examples/textures/cube/Bridge2/negz.jpg'
+  ]);
 
+  const handleRoomImagesReady = (urls) => {
+    setRoomImageUrls(urls);
+  };
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -233,14 +250,6 @@ export default function App() {
     setIsDragging(false);
   };
 
-  const myImages = [
-  'https://threejs.org/examples/textures/cube/Bridge2/posx.jpg',
-  'https://threejs.org/examples/textures/cube/Bridge2/negx.jpg',
-  'https://threejs.org/examples/textures/cube/Bridge2/posy.jpg',
-  'https://threejs.org/examples/textures/cube/Bridge2/negy.jpg',
-  'https://threejs.org/examples/textures/cube/Bridge2/posz.jpg',
-  'https://threejs.org/examples/textures/cube/Bridge2/negz.jpg'
-];
 
   const fetchUserData = async () => {
     const token = localStorage.getItem('spaceSyncToken');
@@ -267,6 +276,7 @@ export default function App() {
       fetchUserData();
     }
   }, []);
+  
   
 
   const handleAuthSubmit = async (e) => {
@@ -409,15 +419,7 @@ export default function App() {
     { id: 'Budget', icon: DollarSign, label: 'Budget', view: 'budget' }
   ];
 
-  
-
-
-<RoomViewer3D imageUrl={generatedRoomImageUrl} />
-
-
-
   return (
-    
     <div className={`h-screen w-screen flex flex-col font-sans overflow-hidden transition-colors duration-500 p-3 ${darkMode ? 'bg-[#0f0b19]' : 'bg-[#f7b0be]'
       }`}>
 
@@ -562,49 +564,11 @@ export default function App() {
           /* VIEW 1: DEFAULT CONFIGURATION WORKSPACE INTERACTIVE CANVAS */
           <div className="flex-1 flex overflow-hidden p-6 gap-6">
             <aside className="w-[28%] flex flex-col gap-5 h-full shrink-0 min-w-[340px]">
-              <div className={`flex-1 rounded-[24px] p-5 flex flex-col border transition-all duration-500 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
-                <div className="flex items-center justify-between pb-3.5 border-b border-dashed border-current opacity-50 text-sm font-bold tracking-wider mb-4">
-                  <span className="flex items-center gap-2.5 text-base"><MessageSquare size={18} className="text-[#e96b8d]" /> AI Assistant</span>
-                  <MoreHorizontal size={18} />
-                </div>
-                <div className="flex-1 overflow-y-auto space-y-4 pr-1 text-[13px] font-medium leading-relaxed">
-                  <div className="flex gap-3 items-start">
-                    <div className="w-7 h-7 rounded-full bg-orange-400 shrink-0 text-center text-xs leading-7 text-white font-bold">👤</div>
-                    <div className={`p-3.5 rounded-2xl rounded-tl-none font-semibold max-w-[85%] shadow-sm ${darkMode ? 'bg-[#251c36] text-[#dfd5eb]' : 'bg-[#ffeef2] text-[#5c353d]'}`}>Hi, as you optimize a small office/room to modern a small /living room.</div>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <div className={`w-7 h-7 rounded-full shrink-0 flex items-center justify-center font-bold text-sm shadow-sm ${darkMode ? 'bg-[#4b316f] text-[#ff81a2]' : 'bg-[#ffd3de] text-[#e96b8d]'}`}><Sparkles size={14} /></div>
-                    <div className={`p-3.5 rounded-2xl rounded-tl-none font-semibold max-w-[85%] shadow-sm ${darkMode ? 'bg-[#312149] text-[#ebdfff]' : 'bg-[#fff0f3] border border-[#fbcad4] text-[#e96b8d]'}`}>Yes, fits the modern a small office/living room?</div>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <div className="w-7 h-7 rounded-full bg-purple-500 shrink-0 text-center text-xs leading-7 text-white font-bold">👤</div>
-                    <div className={`p-3.5 rounded-2xl rounded-tl-none font-semibold max-w-[85%] shadow-sm ${darkMode ? 'bg-[#251c36] text-[#dfd5eb]' : 'bg-[#ffeef2] text-[#5c353d]'}`}>Hew, you cant oasive the portent innovative cotematis enroll you needs.</div>
-                  </div>
-                </div>
-                <div className="mt-4 relative">
-                  <input
-                    type="text"
-                    placeholder="Type your reply here..."
-                    onFocus={(e) => {
-                      if (!currentUser) {
-                        e.target.blur();
-                        setIsLoginModalOpen(true);
-                      }
-                    }}
-                    className={`w-full pl-4 pr-12 py-3.5 rounded-xl border text-sm font-semibold focus:outline-none ${darkMode ? 'bg-[#251c36] border-[#3a2d50] text-white' : 'bg-white border-[#f7c0cc] text-[#4d2d34]'}`}
-                  />
-                  <button
-                    onClick={() => {
-                      if (!currentUser) {
-                        setIsLoginModalOpen(true);
-                      }
-                    }}
-                    className={`absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-lg ${darkMode ? 'text-[#e45d82]' : 'text-[#e96b8d]'}`}
-                  >
-                    <Send size={16} />
-                  </button>
-                </div>
-              </div>
+              <ChatBox
+                darkMode={darkMode}
+                roomData={{ budget: budgetMax, spatialFocus: layoutAdjustment }}
+                onRoomImagesReady={handleRoomImagesReady}
+              />
 
               <div className={`p-5 rounded-[24px] border flex flex-col gap-4 transition-all duration-500 ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
                 <div className="text-sm font-extrabold tracking-tight opacity-80 flex items-center gap-2"><Sliders size={16} className="text-[#e96b8d]" /> Spatial Focus: <span className="opacity-100 font-bold text-[#e96b8d]">[Max Walkway]</span></div>
@@ -621,7 +585,7 @@ export default function App() {
             </aside>
 
             <main className="w-[44%] rounded-[28px] overflow-hidden relative border border-black/5 shadow-md bg-[#2b2538] shrink-0">
-              <RoomViewer3D imageUrls={myImages} />
+              <RoomViewer3D imageUrls={roomImageUrls} />
               <div className="absolute top-5 right-5 flex flex-col gap-2.5">
                 <button className={`p-2.5 rounded-xl border shadow-md ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#e45d82]' : 'bg-white/95 border-[#fad5de] text-[#e96b8d]'}`}><Smartphone size={18} /></button>
                 <button className={`w-10 h-10 rounded-xl border shadow-md font-extrabold text-sm flex items-center justify-center ${darkMode ? 'bg-[#211830]/90 border-[#3d2e53] text-[#a591bf]' : 'bg-white/95 border-[#fad5de] text-[#7d515a]'}`}>3D</button>
@@ -650,6 +614,8 @@ export default function App() {
     </button>
   </div>
             </main>
+
+
 
             <aside className={`w-[28%] rounded-[24px] p-5 border flex flex-col h-full shrink-0 min-w-[340px] ${darkMode ? 'bg-[#150f20]/90 border-[#312543]' : 'bg-[#fffbfb] border-[#fad5de]'}`}>
               <div className="pb-3 border-b border-dashed border-current opacity-50 text-sm font-bold tracking-wider mb-4 flex items-center justify-between"><span className="text-base font-bold">Assets</span><MoreHorizontal size={18} /></div>
